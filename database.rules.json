@@ -43,6 +43,9 @@
         },
         "$other": {
           ".validate": false
+        },
+        "downloadToken": {
+          ".validate": "newData.isString() && newData.val().matches(/^[a-f0-9]{48}$/)"
         }
       }
     },
@@ -105,6 +108,13 @@
     "productFiles": {
       ".read": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
       ".write": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'"
+    },
+    "downloads": {
+      "$token": {
+        ".read": "!data.exists() || data.child('expiresAt').val() > now",
+        ".write": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
+        ".validate": "newData.hasChildren(['files','createdAt','expiresAt'])"
+      }
     }
   }
 }
