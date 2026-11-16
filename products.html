@@ -317,6 +317,14 @@
       color: var(--gold-light);
     }
 
+    .catalog-note{margin:-8px auto 26px;max-width:900px;text-align:center;color:var(--text-muted);font-size:.82rem;line-height:1.7;padding:12px 16px;border:1px solid var(--border-gold);border-radius:14px;background:rgba(229,169,60,.06)}
+    .product-card.is-coming{border-color:rgba(229,169,60,.34)}
+    .product-card.is-coming .product-banner{background:radial-gradient(circle at 50% 35%,rgba(229,169,60,.18),transparent 65%),linear-gradient(135deg,#2a0a0e,#120d0c)}
+    .product-card .coming-soon-btn{background:rgba(229,169,60,.12)!important;border:1px solid var(--border-gold)!important;color:var(--gold-light)!important;cursor:default!important;box-shadow:none!important}
+    .product-group-label{font-size:.68rem;color:var(--gold);letter-spacing:1px;margin-bottom:7px;font-weight:800}
+    .product-card[dir="rtl"] .product-body{text-align:right}
+    .product-card[dir="rtl"] .product-footer{direction:rtl}
+    @media(max-width:600px){.filter-bar{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;padding:4px 2px 12px}.filter-btn{flex:0 0 auto}}
     .products-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
@@ -724,16 +732,22 @@
 
   <section id="products">
     <div class="section-title">
-      <h3>FEATURED DIGITAL PRODUCTS</h3>
-      <p>Instant digital delivery — Select your asset and complete payment seamlessly</p>
+      <div class="section-kicker">THE GHEPARDO DIGITAL EMPIRE</div>
+      <h3>كتالوج منتجات GHEPARDO</h3>
+      <p>24 فكرة رقمية عملية، موزعة على 7 مجموعات — نجهزها معاً تباعاً</p>
     </div>
 
-    <div class="filter-bar">
-      <button class="filter-btn active" onclick="filterProducts('all', this)">All Products</button>
-      <button class="filter-btn" onclick="filterProducts('dashboard', this)">Dashboards</button>
-      <button class="filter-btn" onclick="filterProducts('notion', this)">Templates</button>
-      <button class="filter-btn" onclick="filterProducts('tools', this)">Tools</button>
+    <div class="filter-bar" id="catalog-filters">
+      <button class="filter-btn active" onclick="filterProducts('all', this)">كل المنتجات · 24</button>
+      <button class="filter-btn" onclick="filterProducts('money', this)">💰 المال والوظيفة</button>
+      <button class="filter-btn" onclick="filterProducts('ai', this)">🤖 الذكاء الاصطناعي وإدارة الأعمال</button>
+      <button class="filter-btn" onclick="filterProducts('commerce', this)">🛍️ التجارة وصناع المحتوى والبيت</button>
+      <button class="filter-btn" onclick="filterProducts('small-business', this)">🏪 أصحاب المشاريع والمتاجر</button>
+      <button class="filter-btn" onclick="filterProducts('travel', this)">✈️ المغتربون والسفر</button>
+      <button class="filter-btn" onclick="filterProducts('mindset', this)">🧠 القرارات وإدارة الذات</button>
+      <button class="filter-btn" onclick="filterProducts('daily', this)">📅 الحياة اليومية</button>
     </div>
+    <div class="catalog-note">✨ هذه إصدارات قيد الإعداد. ستُفتح تفاصيل الشراء والتنزيل بعد تجهيز كل منتج واعتماده.</div>
 
     <div class="products-grid" id="products-grid"></div>
   </section>
@@ -908,7 +922,7 @@
     let activeProductFilter = "all";
     onValue(ref(db, "products"), snapshot => {
       const data = snapshot.val() || {};
-      products = Object.entries(data).map(([id, product]) => Object.assign({id}, product)).filter(p => p.status === "published" && Number(p.stock || 0) > 0);
+      products = Object.entries(data).map(([id, product]) => Object.assign({id}, product)).filter(p => (p.status === "published" || p.status === "coming_soon") && Number(p.stock || 0) > 0);
       renderProducts(activeProductFilter);
     }, error => { document.getElementById("products-grid").textContent = "Products are temporarily unavailable."; console.error(error); });
 
@@ -921,13 +935,15 @@
       grid.innerHTML = "";
       const filtered = filter === "all" ? products : products.filter(p => p.category === filter);
       if (!filtered.length) {
-        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:35px 18px;color:var(--text-muted)"><h4 style="color:var(--gold-light);margin-bottom:8px">New releases are on the way</h4><p>Our real GHEPARDO products will appear here soon.</p></div>';
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:35px 18px;color:var(--text-muted)"><h4 style="color:var(--gold-light);margin-bottom:8px">لا توجد منتجات في هذه المجموعة حالياً</h4><p>تابعنا لاكتشاف الإصدارات القادمة.</p></div>';
         return;
       }
       filtered.forEach(p => {
         const img = p.imageData || p.imageUrl || "";
+        const coming = p.status === "coming_soon";
         const visual = img ? '<img src="' + safeText(img) + '" alt="' + safeText(p.title) + '" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">' : '<div class="product-emoji">' + safeText(p.emoji || "✦") + '</div>';
-        const card = '<div class="product-card"><div class="product-banner" style="position:relative;overflow:hidden">' + visual + '<span class="product-badge">' + safeText(p.badge || "GHEPARDO") + '</span>' + (img ? "" : '<div class="product-cat">' + safeText(p.category || "digital") + '</div>') + '</div><div class="product-body"><h4>' + safeText(p.title) + '</h4><p>' + safeText(p.description || "") + '</p><div class="product-footer"><div class="price">' + Number(p.price).toLocaleString() + '<small> EGP</small></div><button class="btn-gold" style="padding:8px 14px;font-size:.8rem" onclick="addToCart(\'' + safeText(p.id) + '\')">Buy Now +</button></div></div></div>';
+        const groupNames = {money:"المال والوظيفة",ai:"الذكاء الاصطناعي وإدارة الأعمال",commerce:"التجارة وصناع المحتوى والبيت","small-business":"أصحاب المشاريع والمتاجر",travel:"المغتربون والسفر",mindset:"القرارات وإدارة الذات",daily:"الحياة اليومية"};
+        const card = '<div class="product-card' + (coming ? ' is-coming' : '') + '" dir="rtl"><div class="product-banner" style="position:relative;overflow:hidden">' + visual + '<span class="product-badge">' + safeText(coming ? "قريباً" : (p.badge || "GHEPARDO")) + '</span>' + '</div><div class="product-body"><div class="product-group-label">' + safeText(groupNames[p.category] || "GHEPARDO DIGITAL") + '</div><h4>' + safeText(p.title) + '</h4><p>' + safeText(p.description || "") + '</p><div class="product-footer">' + (coming ? '<div class="price" style="font-size:.9rem">قيد التجهيز</div><button class="btn-gold coming-soon-btn" type="button" disabled style="padding:8px 14px;font-size:.8rem">قريباً</button>' : '<div class="price">' + Number(p.price).toLocaleString() + '<small> EGP</small></div><button class="btn-gold" style="padding:8px 14px;font-size:.8rem" onclick="addToCart(\'' + safeText(p.id) + '\')">Buy Now +</button>') + '</div></div></div>';
         grid.insertAdjacentHTML("beforeend", card);
       });
     };
