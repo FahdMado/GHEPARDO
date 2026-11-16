@@ -41,7 +41,8 @@
         "$other": {
           ".validate": false
         }
-      }
+      },
+      ".write": "auth != null && auth.token.admin === true"
     },
     "subscribers": {
       ".read": "auth != null && auth.token.admin === true",
@@ -57,7 +58,8 @@
         "$other": {
           ".validate": false
         }
-      }
+      },
+      ".write": "auth != null && auth.token.admin === true"
     }
   }
 }
