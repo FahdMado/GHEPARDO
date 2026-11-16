@@ -42,10 +42,7 @@
           ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 60000"
         },
         "$other": {
-          ".validate": false
-        },
-        "downloadToken": {
-          ".validate": "newData.isString() && newData.val().matches(/^[a-f0-9]{48}$/)"
+          ".validate": "$other === 'downloadToken' && newData.isString() && newData.val().matches(/^[a-f0-9]{48}$/)"
         }
       }
     },
