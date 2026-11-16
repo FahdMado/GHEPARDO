@@ -356,7 +356,11 @@
         createdAt: now,
         expiresAt: now + 23 * 60 * 60 * 1000
       });
-      await update(ref(db, "orders/" + orderId), { status: "confirmed" });
+      await update(ref(db), {
+        ["orders/" + orderId + "/status"]: "confirmed",
+        ["customerOrders/" + downloadToken + "/status"]: "confirmed",
+        ["customerOrders/" + downloadToken + "/expiresAt"]: now + 23 * 60 * 60 * 1000
+      });
       const customerUrl = new URL("download.html?token=" + downloadToken, window.location.href).href;
       try { await navigator.clipboard.writeText(customerUrl); alert("Payment confirmed. Customer downloads are now unlocked for 23 hours. The secure link was copied to your clipboard."); }
       catch (_) { alert("Payment confirmed. Customer downloads are now unlocked for 23 hours. Customer link: " + customerUrl); }
