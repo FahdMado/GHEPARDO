@@ -107,6 +107,7 @@
     }
     .order-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
+    .admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}.field label{font-size:.78rem;color:var(--muted)}.field input,.field textarea,.field select{width:100%;background:#080707;border:1px solid var(--border);color:#fff;padding:11px 12px;border-radius:10px;font:inherit}.field textarea{min-height:90px;resize:vertical}.product-admin-card{display:grid;grid-template-columns:92px 1fr;gap:14px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px}.product-admin-card img{width:92px;height:78px;object-fit:cover;border-radius:9px;background:#080707}.muted{color:var(--muted);font-size:.8rem;line-height:1.5}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.danger{color:#ff8b8b;border-color:#8b3838}@media(max-width:700px){.admin-grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.product-admin-card{grid-template-columns:70px 1fr}.product-admin-card img{width:70px;height:70px}}
     #lock-screen {
       position: fixed;
       inset: 0;
@@ -169,6 +170,22 @@
     <div class="stat-card"><span>Subscribers</span><strong id="stat-subs">0</strong></div>
   </div>
 
+  <h2>PRODUCT MANAGEMENT</h2>
+  <div class="order-card"><p class="muted" style="margin-bottom:14px">Add, edit, publish, unpublish or remove products. Upload a JPG/PNG/WebP cover image (max 400 KB). Add a hosted download URL for the digital file; it is kept in the owner-only area and is not shown publicly.</p>
+  <form id="product-form"><input type="hidden" id="product-id">
+  <div class="admin-grid">
+  <div class="field"><label>Product name *</label><input id="product-title" maxlength="120" required></div>
+  <div class="field"><label>Price (EGP) *</label><input id="product-price" type="number" min="1" max="100000" step="0.01" required></div>
+  <div class="field"><label>Category *</label><select id="product-category"><option value="dashboard">Business dashboards</option><option value="notion">Templates</option><option value="tools">Productivity tools</option><option value="digital">Other digital products</option></select></div>
+  <div class="field"><label>Status</label><select id="product-status"><option value="draft">Draft (hidden)</option><option value="published">Published</option></select></div>
+  <div class="field"><label>Badge</label><input id="product-badge" maxlength="30" placeholder="NEW / BEST SELLER"></div>
+  <div class="field"><label>Available quantity</label><input id="product-stock" type="number" min="0" max="100000" value="999"></div>
+  <div class="field"><label>Cover image upload (max 400 KB)</label><input id="product-image" type="file" accept="image/png,image/jpeg,image/webp"></div>
+  <div class="field"><label>Or cover image URL</label><input id="product-image-url" type="url" placeholder="https://..."></div>
+  </div><div class="field"><label>Product description *</label><textarea id="product-description" maxlength="1200" required></textarea></div>
+  <div class="field"><label>Download file URL (admin-only; share only after payment verification)</label><input id="product-download-url" type="url" placeholder="https://..."></div>
+  <div class="actions"><button class="btn" id="save-product-btn" type="submit">Save product</button><button class="btn-outline" id="reset-product-btn" type="button">Clear form</button></div><p id="product-form-msg" class="muted" style="margin-top:10px"></p></form></div>
+  <div id="products-admin-list"><p class="muted">Loading products...</p></div>
   <h2>CUSTOMER ORDERS</h2>
   <div id="orders-list"><p style="color:var(--muted); font-size:0.85rem;">Loading orders...</p></div>
 
@@ -177,7 +194,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getDatabase, ref, onValue, update, remove, set, push, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     const OWNER_UID = "pDQty2R4KLdv3PBahimLYsG30S42";
     const firebaseConfig = {
@@ -196,7 +213,8 @@
     const loginError = document.getElementById("login-error");
     const lock = document.getElementById("lock-screen");
     const logoutButton = document.getElementById("admin-logout");
-    let stopOrders = null, stopSubscribers = null;
+    let stopOrders = null, stopSubscribers = null, stopProducts = null;
+    let cachedProducts = {};
 
     function escapeHTML(value) {
       return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -207,6 +225,7 @@
       if (stopOrders) stopOrders();
       if (stopSubscribers) stopSubscribers();
       stopOrders = null; stopSubscribers = null;
+      if (stopProducts) stopProducts(); stopProducts = null;
     }
     loginForm.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -226,6 +245,7 @@
 
     function startDashboard() {
       stopDashboard();
+      stopProducts = onValue(ref(db, "products"), snapshot => { cachedProducts = snapshot.val() || {}; renderAdminProducts(); }, error => { document.getElementById("products-admin-list").textContent = "Could not load products: " + error.message; });
       stopOrders = onValue(ref(db, "orders"), snapshot => {
         const data = snapshot.val() || {};
         const orders = Object.entries(data).map(([id, order]) => ({ id, ...order }))
@@ -244,7 +264,7 @@
             <div class="order-top"><strong>${escapeHTML(order.customerName || "Customer")}</strong><span class="badge ${status}">${escapeHTML(order.status || "pending")}</span></div>
             <div class="order-meta">📞 Contact: <b>${escapeHTML(order.contact)}</b><br>💳 Ref: <b>${escapeHTML(order.paymentReference)}</b><br>💰 Total: <b style="color:var(--gold-light);">${escapeHTML(order.totalEGP)} EGP</b></div>
             <div class="order-items">${itemHtml}</div>
-            <div class="order-actions"><button class="btn" data-confirm="${escapeHTML(order.id)}">✓ Mark Confirmed</button><button class="btn-outline" data-delete="${escapeHTML(order.id)}" style="color:#ff6b6b;border-color:#ff6b6b;">Delete</button></div>
+            <div class="order-actions"><button class="btn" data-confirm="${escapeHTML(order.id)}">✓ Mark Confirmed</button><button class="btn-outline" data-deliver="${escapeHTML(order.id)}">Prepare delivery</button><button class="btn-outline" data-delete="${escapeHTML(order.id)}" style="color:#ff6b6b;border-color:#ff6b6b;">Delete</button></div>
           </div>`;
         }).join("");
       }, error => { document.getElementById("orders-list").textContent = "Could not load orders: " + error.message; });
@@ -260,11 +280,37 @@
     document.getElementById("orders-list").addEventListener("click", async event => {
       const confirmId = event.target.closest("[data-confirm]")?.dataset.confirm;
       const deleteId = event.target.closest("[data-delete]")?.dataset.delete;
+      const deliverId = event.target.closest("[data-deliver]")?.dataset.deliver;
       try {
         if (confirmId) await update(ref(db, "orders/" + confirmId), { status: "confirmed" });
         if (deleteId && confirm("Delete this order record?")) await remove(ref(db, "orders/" + deleteId));
+        if (deliverId) await prepareDelivery(deliverId);
       } catch (error) { alert("The action could not be completed. Check administrator access."); }
     });
+
+
+    function renderAdminProducts() {
+      const list = document.getElementById("products-admin-list"), rows = Object.entries(cachedProducts);
+      if (!rows.length) { list.innerHTML = '<div class="order-card muted">No real products yet. Add the first product above.</div>'; return; }
+      list.innerHTML = rows.map(([id,p]) => '<div class="product-admin-card"><img src="' + escapeHTML(p.imageData || p.imageUrl || "Logo.png") + '" alt=""><div><div class="order-top"><strong>' + escapeHTML(p.title) + '</strong><span class="badge ' + (p.status === "published" ? "confirmed" : "pending") + '">' + escapeHTML(p.status || "draft") + '</span></div><div class="muted">' + escapeHTML(p.category) + ' · ' + Number(p.price).toLocaleString() + ' EGP · Stock: ' + Number(p.stock || 0) + '</div><div class="actions"><button class="btn" data-edit-product="' + escapeHTML(id) + '">Edit</button><button class="btn-outline danger" data-delete-product="' + escapeHTML(id) + '">Delete</button></div></div></div>').join("");
+    }
+    const productForm = document.getElementById("product-form");
+    function clearProductForm(){ productForm.reset(); document.getElementById("product-id").value=""; document.getElementById("product-stock").value="999"; document.getElementById("product-form-msg").textContent=""; document.getElementById("save-product-btn").textContent="Save product"; }
+    document.getElementById("reset-product-btn").addEventListener("click",clearProductForm);
+    document.getElementById("products-admin-list").addEventListener("click",async event=>{
+      const editId=event.target.closest("[data-edit-product]")?.dataset.editProduct, deleteId=event.target.closest("[data-delete-product]")?.dataset.deleteProduct;
+      if(editId){const p=cachedProducts[editId];if(!p)return;document.getElementById("product-id").value=editId;document.getElementById("product-title").value=p.title||"";document.getElementById("product-price").value=p.price||"";document.getElementById("product-category").value=p.category||"digital";document.getElementById("product-status").value=p.status||"draft";document.getElementById("product-badge").value=p.badge||"";document.getElementById("product-stock").value=p.stock??999;document.getElementById("product-description").value=p.description||"";document.getElementById("product-image-url").value=p.imageUrl||"";document.getElementById("product-download-url").value="";document.getElementById("product-form-msg").textContent="Editing product. Leave image upload empty to keep its current cover.";document.getElementById("save-product-btn").textContent="Update product";window.scrollTo({top:0,behavior:"smooth"});}
+      if(deleteId&&confirm("Permanently delete this product?")){try{await remove(ref(db,"products/"+deleteId));await remove(ref(db,"productFiles/"+deleteId));}catch(error){alert("Delete failed. Check database rules.");}}
+    });
+    productForm.addEventListener("submit",async event=>{
+      event.preventDefault();const button=document.getElementById("save-product-btn"),msg=document.getElementById("product-form-msg");button.disabled=true;msg.textContent="Saving product...";
+      try{const id=document.getElementById("product-id").value||push(ref(db,"products")).key,existing=cachedProducts[id]||{},file=document.getElementById("product-image").files[0];let imageData=existing.imageData||"";
+        if(file){if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>400*1024)throw Error("Cover image must be JPG, PNG or WebP and no larger than 400 KB.");imageData=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file);});}
+        const imageUrl=document.getElementById("product-image-url").value.trim(),product={title:document.getElementById("product-title").value.trim(),description:document.getElementById("product-description").value.trim(),price:Number(document.getElementById("product-price").value),category:document.getElementById("product-category").value,status:document.getElementById("product-status").value,badge:document.getElementById("product-badge").value.trim(),stock:Number(document.getElementById("product-stock").value),imageData:imageData||null,imageUrl:imageUrl||"",updatedAt:Date.now()};
+        await set(ref(db,"products/"+id),product);const downloadUrl=document.getElementById("product-download-url").value.trim();if(downloadUrl)await set(ref(db,"productFiles/"+id),{downloadUrl:downloadUrl,updatedAt:Date.now()});msg.textContent="Saved. Published products appear in the public catalogue automatically.";clearProductForm();
+      }catch(error){msg.textContent=error.message||"Could not save product. Check Firebase rules.";}finally{button.disabled=false;}
+    });
+    async function prepareDelivery(orderId){const snap=await get(ref(db,"orders/"+orderId)),order=snap.val();if(!order)return alert("Order not found.");if(order.status!=="confirmed")return alert("Verify payment and mark the order Confirmed before preparing delivery.");const items=Array.isArray(order.items)?order.items:Object.values(order.items||{}),lines=[];for(const item of items){if(!item.productId){lines.push(item.title+": contact GHEPARDO for delivery.");continue;}const fileSnap=await get(ref(db,"productFiles/"+item.productId)),file=fileSnap.val();lines.push(item.title+(file?.downloadUrl?": "+file.downloadUrl:": download link not configured."));}const message="Hello "+(order.customerName||"there")+", your GHEPARDO order is confirmed.\n\n"+lines.join("\n")+"\n\nThank you for choosing GHEPARDO.";const phone=String(order.contact||"").replace(/[^0-9]/g,"");if(phone.length>=10){const waPhone=phone.startsWith("0")?"2"+phone:phone;window.open("https://wa.me/"+waPhone+"?text="+encodeURIComponent(message),"_blank");}else{await navigator.clipboard.writeText(message);alert("Delivery message copied. Customer contact is not a phone number.");}}
 
     onAuthStateChanged(auth, async user => {
       if (!user) {
