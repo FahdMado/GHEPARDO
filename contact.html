@@ -720,12 +720,13 @@
         </div>
         <button type="submit" id="submit-order-btn" class="btn-gold" style="width:100%;">Confirm Order & Send via WhatsApp →</button>
       </form>
+      <div id="checkout-result" style="display:none"></div>
     </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD0S16iK5sxnnWb_s4_l41Op1fJE3fZNbI",
@@ -819,26 +820,35 @@
     window.closeCart = function() { document.getElementById('checkout-modal').classList.remove('open'); };
     window.copyText = function(elId) { navigator.clipboard.writeText(document.getElementById(elId).innerText); alert('Copied!'); };
 
-    window.submitOrder = async function(e) {
+function makeDownloadToken() {
+      const bytes = new Uint8Array(24);
+      crypto.getRandomValues(bytes);
+      return Array.from(bytes, byte => byte.toString(16).padStart(2, "0")).join("");
+    }
+
+        window.submitOrder = async function(e) {
       e.preventDefault();
       if (cart.length === 0) { alert('Please add at least one product first.'); return; }
       const btn = document.getElementById('submit-order-btn');
       btn.innerText = 'Saving Order...';
       btn.disabled = true;
 
-      const name = document.getElementById('cust-name').value;
-      const contact = document.getElementById('cust-contact').value;
-      const refNum = document.getElementById('cust-ref').value;
+      const name = document.getElementById('cust-name').value.trim();
+      const contact = document.getElementById('cust-contact').value.trim();
+      const refNum = document.getElementById('cust-ref').value.trim();
       const total = cart.reduce((sum, i) => sum + i.price, 0);
+      const downloadToken = makeDownloadToken();
+      const orderRef = push(ref(db, "orders"));
 
       try {
-        await push(ref(db, "orders"), {
-          customerName: name.trim(),
-          contact: contact.trim(),
-          paymentReference: refNum.trim(),
+        await set(orderRef, {
+          customerName: name,
+          contact,
+          paymentReference: refNum,
           items: cart.map(i => ({ productId: i.id, title: i.title, price: i.price })),
           totalEGP: total,
           status: "pending",
+          downloadToken,
           timestampMs: Date.now()
         });
       } catch (err) {
@@ -849,11 +859,25 @@
         return;
       }
 
-      const itemsText = cart.map(i => `- ${i.title} (${i.price} EGP)`).join('%0A');
-      const msg = `*NEW GHEPARDO ORDER*%0A*Name:* ${name}%0A*Delivery Contact:* ${contact}%0A*Payment Ref:* ${refNum}%0A*Items:*%0A${itemsText}%0A*Total:* ${total} EGP`;
-      btn.innerText = 'Confirm Order & Send via WhatsApp →';
-      btn.disabled = false;
-      window.open(`https://wa.me/${OWNER_WHATSAPP}?text=${msg}`, '_blank');
+      const downloadUrl = new URL("download.html?token=" + downloadToken, window.location.href).href;
+      try { localStorage.setItem("ghepardo_last_download_url", downloadUrl); } catch (_) {}
+      const result = document.getElementById("checkout-result");
+      if (result) {
+        result.style.display = "block";
+        result.innerHTML = '<div style="border:1px solid var(--gold);border-radius:14px;padding:14px;margin-top:14px;background:#100d0b"><strong style="color:var(--gold-light)">✓ Order received</strong><p style="font-size:.82rem;line-height:1.55;margin:8px 0;color:var(--text-muted)">Your secure download page is ready. It will show your files automatically after GHEPARDO verifies your payment. Save this link.</p><a class="btn-gold" style="width:100%;font-size:.8rem" href="' + downloadUrl + '" target="_blank" rel="noopener">Open my order & download page →</a><button type="button" class="btn-outline" style="width:100%;justify-content:center;margin-top:8px" id="copy-order-link">Copy secure link</button><p style="font-size:.68rem;color:var(--text-muted);word-break:break-all;margin-top:8px">Order ID: ' + orderRef.key + '</p></div>';
+        document.getElementById("copy-order-link").addEventListener("click", async () => {
+          try { await navigator.clipboard.writeText(downloadUrl); alert("Secure order link copied."); }
+          catch (_) { prompt("Copy your secure order link:", downloadUrl); }
+        });
+      }
+
+      const itemsText = cart.map(i => '- ' + i.title + ' (' + i.price + ' EGP)').join('%0A');
+      const msg = '*NEW GHEPARDO ORDER*%0A*Order ID:* ' + orderRef.key + '%0A*Name:* ' + encodeURIComponent(name) + '%0A*Delivery Contact:* ' + encodeURIComponent(contact) + '%0A*Payment Ref:* ' + encodeURIComponent(refNum) + '%0A*Items:*%0A' + itemsText + '%0A*Total:* ' + total + ' EGP';
+      btn.innerText = 'Order Saved ✓';
+      btn.disabled = true;
+      window.open('https://wa.me/' + OWNER_WHATSAPP + '?text=' + msg, '_blank');
+      cart = [];
+      updateCartUI();
     };
 
     window.subscribeUser = async function(e) {
