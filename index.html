@@ -786,7 +786,11 @@
           items: cart.map(i => ({ id: i.id }))
         });
       } catch (err) {
-        console.warn(err);
+        console.error("Order save failed:", err);
+        btn.innerText = 'Confirm Order & Send via WhatsApp →';
+        btn.disabled = false;
+        alert('We could not save your order. Please try again in a moment.');
+        return;
       }
 
       const itemsText = cart.map(i => `- ${i.title} (${i.price} EGP)`).join('%0A');
@@ -801,7 +805,11 @@
       const email = document.getElementById('sub-email').value;
       try {
         await subscribeNewsletter({ email });
-      } catch (err) { console.warn(err); }
+      } catch (err) {
+        console.error("Newsletter subscription failed:", err);
+        document.getElementById('sub-msg').innerText = 'Subscription failed. Please try again.';
+        return;
+      }
       document.getElementById('sub-msg').innerText = '✓ Welcome to GHEPARDO! Subscribed: ' + email;
       document.getElementById('sub-email').value = '';
     };
