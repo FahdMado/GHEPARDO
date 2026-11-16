@@ -779,17 +779,21 @@
       const total = cart.reduce((sum, i) => sum + i.price, 0);
 
       try {
-        await push(ref(db, 'orders'), {
-          customerName: name,
-          contact: contact,
-          paymentReference: refNum,
+        await push(ref(db, "orders"), {
+          customerName: name.trim(),
+          contact: contact.trim(),
+          paymentReference: refNum.trim(),
           items: cart.map(i => ({ title: i.title, price: i.price })),
           totalEGP: total,
           status: "pending",
           timestampMs: Date.now()
         });
       } catch (err) {
-        console.warn(err);
+        console.error("Order save failed:", err);
+        btn.innerText = 'Confirm Order & Send via WhatsApp →';
+        btn.disabled = false;
+        alert('We could not save your order. Please try again in a moment.');
+        return;
       }
 
       const itemsText = cart.map(i => `- ${i.title} (${i.price} EGP)`).join('%0A');
@@ -803,8 +807,12 @@
       e.preventDefault();
       const email = document.getElementById('sub-email').value;
       try {
-        await push(ref(db, 'subscribers'), { email: email, timestampMs: Date.now() });
-      } catch (err) { console.warn(err); }
+        await push(ref(db, "subscribers"), { email: email.trim().toLowerCase(), timestampMs: Date.now() });
+      } catch (err) {
+        console.error("Newsletter subscription failed:", err);
+        document.getElementById('sub-msg').innerText = 'Subscription failed. Please try again.';
+        return;
+      }
       document.getElementById('sub-msg').innerText = '✓ Welcome to GHEPARDO! Subscribed: ' + email;
       document.getElementById('sub-email').value = '';
     };

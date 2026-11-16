@@ -145,9 +145,13 @@
     <div class="lock-box">
       <img src="Logo.png" alt="GHEPARDO" style="width:60px; margin-bottom:10px;" />
       <h2 style="margin:0 0 6px;">ADMIN ACCESS</h2>
-      <p style="font-size:0.8rem; color:var(--muted);">Enter GHEPARDO Command PIN</p>
-      <input type="password" id="pin-input" placeholder="••••••" />
-      <button class="btn" style="width:100%;" onclick="unlockAdmin()">Unlock Dashboard →</button>
+      <p style="font-size:0.8rem; color:var(--muted); margin:8px 0 14px;">Sign in with your GHEPARDO owner account</p>
+      <form id="admin-login-form">
+        <input type="email" id="admin-email" placeholder="Email address" autocomplete="username" required />
+        <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password" required />
+        <button class="btn" type="submit" style="width:100%;">Sign in securely →</button>
+      </form>
+      <p id="login-error" style="color:#ff8b8b;font-size:.78rem;margin-top:12px;"></p>
     </div>
   </div>
 
@@ -156,7 +160,7 @@
       <img src="Logo.png" alt="Logo" />
       <h1>GHEPARDO ADMIN</h1>
     </div>
-    <a href="index.html" class="btn-outline">← Live Store</a>
+    <div style="display:flex;gap:8px;align-items:center;"><button id="admin-logout" class="btn-outline" type="button" style="display:none;">Sign out</button><a href="index.html" class="btn-outline">← Live Store</a></div>
   </div>
 
   <div class="stats">
@@ -174,23 +178,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-    const ADMIN_PIN = "202600";
-
-    window.unlockAdmin = function() {
-      const val = document.getElementById('pin-input').value;
-      if (val === ADMIN_PIN) {
-        document.getElementById('lock-screen').style.display = 'none';
-        sessionStorage.setItem('ghepardo_admin', '1');
-      } else {
-        alert('Incorrect PIN');
-      }
-    };
-
-    if (sessionStorage.getItem('ghepardo_admin') === '1') {
-      document.getElementById('lock-screen').style.display = 'none';
-    }
-
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    const OWNER_UID = "pDQty2R4KLdv3PBahimLYsG30S42";
     const firebaseConfig = {
       apiKey: "AIzaSyD0S16iK5sxnnWb_s4_l41Op1fJE3fZNbI",
       authDomain: "ghepardo-1.firebaseapp.com",
@@ -200,77 +189,96 @@
       messagingSenderId: "814705402338",
       appId: "1:814705402338:web:a3e7541baf91e6d95099bb"
     };
-
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const auth = getAuth(app);
+    const loginForm = document.getElementById("admin-login-form");
+    const loginError = document.getElementById("login-error");
+    const lock = document.getElementById("lock-screen");
+    const logoutButton = document.getElementById("admin-logout");
+    let stopOrders = null, stopSubscribers = null;
 
-    onValue(ref(db, 'orders'), (snap) => {
-      const list = document.getElementById('orders-list');
-      list.innerHTML = '';
-      const data = snap.val();
-
-      if (!data) {
-        document.getElementById('stat-orders').innerText = '0';
-        document.getElementById('stat-rev').innerText = '0';
-        list.innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">No orders yet. Once a customer places an order, it appears here live.</p>';
-        return;
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[char]);
+    }
+    function stopDashboard() {
+      if (stopOrders) stopOrders();
+      if (stopSubscribers) stopSubscribers();
+      stopOrders = null; stopSubscribers = null;
+    }
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = loginForm.querySelector("button");
+      button.disabled = true; button.textContent = "Signing in..."; loginError.textContent = "";
+      try {
+        await signInWithEmailAndPassword(auth,
+          document.getElementById("admin-email").value.trim(),
+          document.getElementById("admin-password").value);
+      } catch (error) {
+        loginError.textContent = "Sign-in failed. Check your email and password.";
+      } finally {
+        button.disabled = false; button.textContent = "Sign in securely →";
       }
+    });
+    logoutButton.addEventListener("click", () => signOut(auth));
 
-      const docs = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-      docs.sort((a, b) => (b.timestampMs || 0) - (a.timestampMs || 0));
+    function startDashboard() {
+      stopDashboard();
+      stopOrders = onValue(ref(db, "orders"), snapshot => {
+        const data = snapshot.val() || {};
+        const orders = Object.entries(data).map(([id, order]) => ({ id, ...order }))
+          .sort((a, b) => (b.timestampMs || 0) - (a.timestampMs || 0));
+        document.getElementById("stat-orders").textContent = orders.length;
+        document.getElementById("stat-rev").textContent = orders
+          .filter(order => order.status === "confirmed")
+          .reduce((sum, order) => sum + Number(order.totalEGP || 0), 0);
+        const list = document.getElementById("orders-list");
+        if (!orders.length) { list.innerHTML = '<p style="color:var(--muted);font-size:.85rem;">No orders yet.</p>'; return; }
+        list.innerHTML = orders.map(order => {
+          const items = Array.isArray(order.items) ? order.items : Object.values(order.items || {});
+          const itemHtml = items.map(item => `• ${escapeHTML(item.title)} — <b>${escapeHTML(item.price)} EGP</b>`).join("<br>");
+          const status = order.status === "confirmed" ? "confirmed" : "pending";
+          return `<div class="order-card">
+            <div class="order-top"><strong>${escapeHTML(order.customerName || "Customer")}</strong><span class="badge ${status}">${escapeHTML(order.status || "pending")}</span></div>
+            <div class="order-meta">📞 Contact: <b>${escapeHTML(order.contact)}</b><br>💳 Ref: <b>${escapeHTML(order.paymentReference)}</b><br>💰 Total: <b style="color:var(--gold-light);">${escapeHTML(order.totalEGP)} EGP</b></div>
+            <div class="order-items">${itemHtml}</div>
+            <div class="order-actions"><button class="btn" data-confirm="${escapeHTML(order.id)}">✓ Mark Confirmed</button><button class="btn-outline" data-delete="${escapeHTML(order.id)}" style="color:#ff6b6b;border-color:#ff6b6b;">Delete</button></div>
+          </div>`;
+        }).join("");
+      }, error => { document.getElementById("orders-list").textContent = "Could not load orders: " + error.message; });
 
-      let totalRev = 0;
-      document.getElementById('stat-orders').innerText = docs.length;
+      stopSubscribers = onValue(ref(db, "subscribers"), snapshot => {
+        const data = snapshot.val() || {}, subscribers = Object.values(data);
+        document.getElementById("stat-subs").textContent = subscribers.length;
+        document.getElementById("subs-list").innerHTML = subscribers.length
+          ? subscribers.map(item => "✉️ " + escapeHTML(item.email)).join("<br>") : "No subscribers yet.";
+      }, error => { document.getElementById("subs-list").textContent = "Could not load subscribers: " + error.message; });
+    }
 
-      docs.forEach((o) => {
-        if (o.status === 'confirmed') totalRev += Number(o.totalEGP || 0);
-        const itemsHtml = (o.items || []).map(i => `• ${i.title} — <b>${i.price} EGP</b>`).join('<br>');
-        const statusClass = o.status === 'confirmed' ? 'confirmed' : 'pending';
-
-        list.innerHTML += `
-          <div class="order-card">
-            <div class="order-top">
-              <strong>${o.customerName || 'Customer'}</strong>
-              <span class="badge ${statusClass}">${o.status || 'pending'}</span>
-            </div>
-            <div class="order-meta">
-              📞 Contact: <b>${o.contact}</b><br>
-              💳 Ref: <b>${o.paymentReference}</b><br>
-              💰 Total: <b style="color:var(--gold-light);">${o.totalEGP} EGP</b>
-            </div>
-            <div class="order-items">${itemsHtml}</div>
-            <div class="order-actions">
-              <button class="btn" onclick="confirmOrder('${o.id}')">✓ Mark Confirmed</button>
-              <button class="btn-outline" style="color:#ff6b6b; border-color:#ff6b6b;" onclick="deleteOrder('${o.id}')">Delete</button>
-            </div>
-          </div>
-        `;
-      });
-      document.getElementById('stat-rev').innerText = totalRev;
+    document.getElementById("orders-list").addEventListener("click", async event => {
+      const confirmId = event.target.closest("[data-confirm]")?.dataset.confirm;
+      const deleteId = event.target.closest("[data-delete]")?.dataset.delete;
+      try {
+        if (confirmId) await update(ref(db, "orders/" + confirmId), { status: "confirmed" });
+        if (deleteId && confirm("Delete this order record?")) await remove(ref(db, "orders/" + deleteId));
+      } catch (error) { alert("The action could not be completed. Check administrator access."); }
     });
 
-    onValue(ref(db, 'subscribers'), (snap) => {
-      const data = snap.val();
-      const box = document.getElementById('subs-list');
-      if (!data) {
-        document.getElementById('stat-subs').innerText = '0';
-        box.innerText = 'No subscribers yet.';
+    onAuthStateChanged(auth, async user => {
+      if (!user) {
+        stopDashboard(); lock.style.display = "flex"; logoutButton.style.display = "none";
+        document.getElementById("orders-list").textContent = "Sign in with the owner account to load orders.";
+        document.getElementById("subs-list").textContent = "Administrator access required.";
         return;
       }
-      const list = Object.values(data);
-      document.getElementById('stat-subs').innerText = list.length;
-      box.innerHTML = list.map(s => '✉️ ' + s.email).join('<br>');
-    });
-
-    window.confirmOrder = async function(id) {
-      await update(ref(db, 'orders/' + id), { status: "confirmed" });
-    };
-
-    window.deleteOrder = async function(id) {
-      if (confirm('Delete this order record?')) {
-        await remove(ref(db, 'orders/' + id));
+      if (user.uid !== OWNER_UID) {
+        loginError.textContent = "This Firebase account is not the authorized GHEPARDO owner.";
+        await signOut(auth); return;
       }
-    };
+      lock.style.display = "none"; logoutButton.style.display = "inline-block"; startDashboard();
+    });
   </script>
 </body>
 </html>
