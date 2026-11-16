@@ -20,7 +20,7 @@ h1{font-size:21px;color:var(--light);text-align:center}p{color:var(--muted);line
 <body><main>
 <div class="brand">GHEPARDO</div><h1>Your secure digital order</h1>
 <p>Keep this private link. Your files will appear here after your payment is verified.</p>
-<div id="status" class="status">Checking your order…</div><div id="files"></div>
+<div id="status" class="status">Checking your order…</div><div id="expiry" class="status" hidden></div><div id="files"></div>
 <a class="back" href="products.html">← Back to GHEPARDO store</a>
 </main>
 <script type="module">
@@ -28,15 +28,21 @@ import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase
 import {getDatabase,ref,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 const config={apiKey:"AIzaSyD0S16iK5sxnnWb_s4_l41Op1fJE3fZNbI",authDomain:"ghepardo-1.firebaseapp.com",databaseURL:"https://ghepardo-1-default-rtdb.europe-west1.firebasedatabase.app",projectId:"ghepardo-1",storageBucket:"ghepardo-1.firebasestorage.app",messagingSenderId:"814705402338",appId:"1:814705402338:web:a3e7541baf91e6d95099bb"};
 const token=new URLSearchParams(location.search).get("token")||"";
-const status=document.getElementById("status"),box=document.getElementById("files");
+const status=document.getElementById("status"),box=document.getElementById("files"),expiry=document.getElementById("expiry");
+let expiryTimer=null;
 if(!/^[a-f0-9]{48}$/.test(token)){status.textContent="This download link is invalid. Please use the private link provided after checkout.";}
 else{
  const db=getDatabase(initializeApp(config));
  onValue(ref(db,"downloads/"+token),snap=>{
   const data=snap.val();
   if(!data){status.textContent="Payment is awaiting verification. This page will update automatically after GHEPARDO confirms your payment.";return;}
-  if(!data.expiresAt||Date.now()>Number(data.expiresAt)){status.textContent="This download link has expired. Please contact GHEPARDO for assistance.";box.replaceChildren();return;}
-  status.textContent="✓ Payment confirmed. Your digital files are ready.";box.replaceChildren();
+  if(!data.expiresAt||Date.now()>Number(data.expiresAt)){status.textContent="This download link has expired or is no longer available. Please contact GHEPARDO for a new link.";box.replaceChildren();expiry.hidden=true;if(expiryTimer)clearInterval(expiryTimer);return;}
+  status.textContent="✓ Payment confirmed. Your digital files are ready.";
+  expiry.hidden=false;
+  const expiresAt=Number(data.expiresAt);
+  const updateExpiry=()=>{const remaining=expiresAt-Date.now();if(remaining<=0){expiry.textContent="Download access has expired. Please contact GHEPARDO.";box.replaceChildren();if(expiryTimer)clearInterval(expiryTimer);return;}const hours=Math.floor(remaining/3600000),minutes=Math.floor((remaining%3600000)/60000),seconds=Math.floor((remaining%60000)/1000);expiry.textContent="Secure link expires in "+hours+"h "+minutes+"m "+seconds+"s (23-hour access window).";};
+  updateExpiry();if(expiryTimer)clearInterval(expiryTimer);expiryTimer=setInterval(updateExpiry,1000);
+  box.replaceChildren();
   (Array.isArray(data.files)?data.files:Object.values(data.files||{})).forEach(file=>{
    const row=document.createElement("div");row.className="file";
    const info=document.createElement("div"),title=document.createElement("strong"),name=document.createElement("small");
@@ -47,6 +53,6 @@ else{
    else{link.textContent="Unavailable";link.removeAttribute("href");}
    row.append(info,link);box.append(row);
   });
- },err=>{status.textContent="We could not check this order. Please contact GHEPARDO and share your order link.";console.error(err);});
+ },err=>{status.textContent="This link may have expired or is temporarily unavailable. Please contact GHEPARDO and share your order reference.";expiry.hidden=true;console.error(err);});
 }
 </script></body></html>
