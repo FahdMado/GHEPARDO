@@ -156,7 +156,7 @@
       <img src="Logo.png" alt="Logo" />
       <h1>GHEPARDO ADMIN</h1>
     </div>
-    <a href="index.html" class="btn-outline">← Live Store</a>
+    <div style="display:flex;gap:8px;align-items:center;"><button id="admin-logout" class="btn-outline" type="button" style="display:none;">Sign out</button><a href="index.html" class="btn-outline">← Live Store</a></div>
   </div>
 
   <div class="stats">
@@ -174,22 +174,34 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
 
-    const ADMIN_PIN = "202600";
+    const loginForm = document.getElementById("admin-login-form");
+    const loginError = document.getElementById("login-error");
+    let dashboardStarted = false;
 
-    window.unlockAdmin = function() {
-      const val = document.getElementById('pin-input').value;
-      if (val === ADMIN_PIN) {
-        document.getElementById('lock-screen').style.display = 'none';
-        sessionStorage.setItem('ghepardo_admin', '1');
-      } else {
-        alert('Incorrect PIN');
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = loginForm.querySelector("button");
+      button.disabled = true;
+      button.textContent = "Signing in...";
+      loginError.textContent = "";
+      try {
+        await signInWithEmailAndPassword(
+          auth,
+          document.getElementById("admin-email").value.trim(),
+          document.getElementById("admin-password").value
+        );
+      } catch (error) {
+        loginError.textContent = "Sign-in failed. Check your email and password.";
+      } finally {
+        button.disabled = false;
+        button.textContent = "Sign in securely →";
       }
-    };
+    });
 
-    if (sessionStorage.getItem('ghepardo_admin') === '1') {
-      document.getElementById('lock-screen').style.display = 'none';
-    }
+    document.getElementById("admin-logout").addEventListener("click", () => signOut(auth));
 
     const firebaseConfig = {
       apiKey: "AIzaSyD0S16iK5sxnnWb_s4_l41Op1fJE3fZNbI",
@@ -202,9 +214,9 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const db = getDatabase(app);\n    const auth = getAuth(app);\n    const functions = getFunctions(app, "europe-west1");\n    const claimAdmin = httpsCallable(functions, "claimGhepardoAdmin");
 
-    onValue(ref(db, 'orders'), (snap) => {
+    function startAdminDashboard() {\n      if (dashboardStarted) return;\n      dashboardStarted = true;\n      onValue(ref(db, 'orders'), (snap) => {
       const list = document.getElementById('orders-list');
       list.innerHTML = '';
       const data = snap.val();
@@ -271,6 +283,37 @@
         await remove(ref(db, 'orders/' + id));
       }
     };
+
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      const lock = document.getElementById("lock-screen");
+      const logout = document.getElementById("admin-logout");
+      if (!user) {
+        lock.style.display = "flex";
+        logout.style.display = "none";
+        dashboardStarted = false;
+        document.getElementById("orders-list").textContent = "Sign in with the owner account to load orders.";
+        document.getElementById("subs-list").textContent = "Administrator access required.";
+        return;
+      }
+
+      try {
+        let token = await user.getIdTokenResult();
+        if (token.claims.admin !== true) {
+          await claimAdmin();
+          token = await user.getIdTokenResult(true);
+        }
+        if (token.claims.admin !== true) throw new Error("Admin claim missing");
+        lock.style.display = "none";
+        logout.style.display = "inline-block";
+        startAdminDashboard();
+      } catch (error) {
+        await signOut(auth);
+        lock.style.display = "flex";
+        loginError.textContent = "This account is not authorized as the GHEPARDO owner. Verify the configured owner email and email verification.";
+      }
+    });
   </script>
 </body>
 </html>
