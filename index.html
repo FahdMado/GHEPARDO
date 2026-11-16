@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GHEPARDO | Beyond One Industry. Beyond One Vision.</title>
+  <title>GHEPARDO | Home</title>
   <meta name="description" content="GHEPARDO is a multi-industry brand ecosystem connecting digital innovation, commerce, hospitality, fashion and future ventures." />
   <meta name="theme-color" content="#080808" />
   <meta property="og:title" content="GHEPARDO — Beyond One Industry. Beyond One Vision." />
@@ -523,24 +523,41 @@
       .bottom-grid { grid-template-columns: 1fr; }
       .mobile-nav { display: flex; }
     }
+  
+    /* Multi-page navigation and refined mobile dock */
+    body[data-page="about"] > #home, body[data-page="about"] > .manifesto, body[data-page="about"] > #solutions, body[data-page="about"] > #products, body[data-page="about"] > #portfolio, body[data-page="about"] > #ventures, body[data-page="about"] > #insights, body[data-page="about"] > #contact,
+    body[data-page="solutions"] > #home, body[data-page="solutions"] > .manifesto, body[data-page="solutions"] > #about, body[data-page="solutions"] > #products, body[data-page="solutions"] > #portfolio, body[data-page="solutions"] > #ventures, body[data-page="solutions"] > #insights, body[data-page="solutions"] > #contact,
+    body[data-page="products"] > #home, body[data-page="products"] > .manifesto, body[data-page="products"] > #about, body[data-page="products"] > #solutions, body[data-page="products"] > #portfolio, body[data-page="products"] > #ventures, body[data-page="products"] > #insights, body[data-page="products"] > #contact,
+    body[data-page="portfolio"] > #home, body[data-page="portfolio"] > .manifesto, body[data-page="portfolio"] > #about, body[data-page="portfolio"] > #solutions, body[data-page="portfolio"] > #products, body[data-page="portfolio"] > #ventures, body[data-page="portfolio"] > #insights, body[data-page="portfolio"] > #contact,
+    body[data-page="ventures"] > #home, body[data-page="ventures"] > .manifesto, body[data-page="ventures"] > #about, body[data-page="ventures"] > #solutions, body[data-page="ventures"] > #products, body[data-page="ventures"] > #portfolio, body[data-page="ventures"] > #insights, body[data-page="ventures"] > #contact,
+    body[data-page="insights"] > #home, body[data-page="insights"] > .manifesto, body[data-page="insights"] > #about, body[data-page="insights"] > #solutions, body[data-page="insights"] > #products, body[data-page="insights"] > #portfolio, body[data-page="insights"] > #ventures, body[data-page="insights"] > #contact,
+    body[data-page="contact"] > #home, body[data-page="contact"] > .manifesto, body[data-page="contact"] > #about, body[data-page="contact"] > #solutions, body[data-page="contact"] > #products, body[data-page="contact"] > #portfolio, body[data-page="contact"] > #ventures, body[data-page="contact"] > #insights { display:none !important; }
+    body[data-page="home"] > #about, body[data-page="home"] > #solutions, body[data-page="home"] > #products, body[data-page="home"] > #portfolio, body[data-page="home"] > #ventures, body[data-page="home"] > #insights, body[data-page="home"] > #contact { display:none !important; }
+    nav a[aria-current="page"] { color:var(--gold-light); position:relative; }
+    nav a[aria-current="page"]:after { content:""; position:absolute; left:0; right:0; bottom:-9px; height:2px; background:var(--gold); }
+    .mobile-nav { align-items:stretch; justify-content:space-around; gap:4px; padding:9px 10px calc(9px + env(safe-area-inset-bottom)); background:rgba(8,7,7,.96); border-top:1px solid var(--border-gold); backdrop-filter:blur(18px); }
+    .mobile-nav a { min-width:0; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; color:var(--text-muted); text-decoration:none; font-size:.68rem; font-weight:700; letter-spacing:.2px; padding:3px 2px; }
+    .mobile-nav a svg { width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+    .mobile-nav a[aria-current="page"] { color:var(--gold-light); }
+    .mobile-nav a[aria-current="page"] svg { filter:drop-shadow(0 0 5px rgba(229,169,60,.35)); }
+    @media(min-width:861px){ .mobile-nav{display:none !important;} body{padding-bottom:0;} }
+
   </style>
 </head>
-<body>
+<body data-page="home">
 
   <header>
-    <a href="#" class="brand">
+    <a href="index.html" class="brand">
       <img src="Logo.png" alt="GHEPARDO Logo" />
       <div class="brand-text">
         <h1>GHEPARDO</h1>
         <span>Build to Evolve. Designed to Scale.</span>
       </div>
     </a>
-    <nav>
-      <a href="#home" class="active">Home</a><a href="#about">About</a><a href="#solutions">Solutions</a><a href="#products">Products</a><a href="#portfolio">Portfolio</a><a href="#ventures">Ventures</a><a href="#insights">Insights</a><a href="#contact">Contact</a>
-    </nav>
+    <nav aria-label="Main navigation"><a href="index.html" data-page-link="home" aria-current="page">Home</a><a href="about.html" data-page-link="about">About</a><a href="solutions.html" data-page-link="solutions">Solutions</a><a href="products.html" data-page-link="products">Products</a><a href="portfolio.html" data-page-link="portfolio">Portfolio</a><a href="ventures.html" data-page-link="ventures">Ventures</a><a href="insights.html" data-page-link="insights">Insights</a><a href="contact.html" data-page-link="contact">Contact</a></nav>
     <div class="header-actions">
       <button class="cart-btn" onclick="openCart()">🛒 Cart (<span id="cart-count">0</span>)</button>
-      <a href="#products" class="btn-gold desktop-only">Get Started →</a>
+      <a href="products.html" class="btn-gold desktop-only">Get Started →</a>
     </div>
   </header>
 
@@ -550,8 +567,8 @@
       <h2>BEYOND ONE INDUSTRY.<br><span>BEYOND ONE VISION.</span></h2>
       <p>GHEPARDO is an evolving brand ecosystem built to connect ideas, technology, commerce and experiences. One bold identity. Multiple worlds. A future designed to scale.</p>
       <div class="hero-btns">
-        <a href="#solutions" class="btn-gold">Explore Our World ↗</a>
-        <a href="#about" class="btn-outline">Discover GHEPARDO</a>
+        <a href="solutions.html" class="btn-gold">Explore Our World ↗</a>
+        <a href="about.html" class="btn-outline">Discover GHEPARDO</a>
       </div>
       <div class="trust-strip">
         <div class="trust-item"><strong>One Identity</strong>One master brand</div>
@@ -647,9 +664,12 @@
     <p>© 2026 GHEPARDO Ecosystem. All Rights Reserved. | Build to Evolve. Designed to Scale.</p>
   </footer>
 
-  <div class="mobile-nav">
-    <a href="#home" class="active"><span>⌂</span>Home</a><a href="#solutions"><span>✦</span>World</a><a href="#products"><span>◇</span>Products</a><a href="#contact"><span>✉</span>Contact</a>
-  </div>
+  <div class="mobile-nav" aria-label="Primary mobile navigation">
+<a href="index.html" data-page-link="home" aria-current="page" aria-label="Home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></a>
+<a href="solutions.html" data-page-link="solutions" aria-label="Solutions"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.8 8.2-2.4 5.2-5.2 2.4 2.4-5.2z"/></svg><span>Explore</span></a>
+<a href="products.html" data-page-link="products" aria-label="Products"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span>Products</span></a>
+<a href="contact.html" data-page-link="contact" aria-label="Contact"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-4-.9L3 21l1.7-4.5A8.3 8.3 0 1 1 21 11.5Z"/><path d="M8 11h8M8 14h5"/></svg><span>Contact</span></a>
+</div>
 
   <div class="modal-overlay" id="checkout-modal">
     <div class="modal-box">
