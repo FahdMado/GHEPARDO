@@ -145,9 +145,13 @@
     <div class="lock-box">
       <img src="Logo.png" alt="GHEPARDO" style="width:60px; margin-bottom:10px;" />
       <h2 style="margin:0 0 6px;">ADMIN ACCESS</h2>
-      <p style="font-size:0.8rem; color:var(--muted);">Enter GHEPARDO Command PIN</p>
-      <input type="password" id="pin-input" placeholder="••••••" />
-      <button class="btn" style="width:100%;" onclick="unlockAdmin()">Unlock Dashboard →</button>
+      <p style="font-size:0.8rem; color:var(--muted); margin:8px 0 14px;">Sign in with your GHEPARDO owner account</p>
+      <form id="admin-login-form">
+        <input type="email" id="admin-email" placeholder="Email address" autocomplete="username" required />
+        <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password" required />
+        <button class="btn" type="submit" style="width:100%;">Sign in securely →</button>
+      </form>
+      <p id="login-error" style="color:#ff8b8b;font-size:.78rem;margin-top:12px;"></p>
     </div>
   </div>
 
