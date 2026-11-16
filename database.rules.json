@@ -26,6 +26,9 @@
             },
             "$other": {
               ".validate": false
+            },
+            "productId": {
+              ".validate": "newData.isString() && newData.val().length <= 128"
             }
           }
         },
@@ -58,6 +61,50 @@
           ".validate": false
         }
       }
+    },
+    "products": {
+      ".read": true,
+      ".write": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
+      "$productId": {
+        ".validate": "newData.hasChildren(['title','description','price','category','status','stock','updatedAt'])",
+        "title": {
+          ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 120"
+        },
+        "description": {
+          ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 1200"
+        },
+        "price": {
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 100000"
+        },
+        "category": {
+          ".validate": "newData.val() === 'dashboard' || newData.val() === 'notion' || newData.val() === 'tools' || newData.val() === 'digital'"
+        },
+        "status": {
+          ".validate": "newData.val() === 'draft' || newData.val() === 'published'"
+        },
+        "stock": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100000"
+        },
+        "badge": {
+          ".validate": "newData.isString() && newData.val().length <= 30"
+        },
+        "imageData": {
+          ".validate": "newData.isString() && newData.val().length <= 550000"
+        },
+        "imageUrl": {
+          ".validate": "newData.isString() && newData.val().length <= 2048"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber() && newData.val() > 0"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "productFiles": {
+      ".read": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
+      ".write": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'"
     }
   }
 }
