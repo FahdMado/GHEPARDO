@@ -140,6 +140,23 @@
           ".validate": false
         }
       }
+    },
+    "publicStats": {
+      ".read": true,
+      ".write": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
+      ".validate": "newData.hasChildren(['trustedUsers','buyers','updatedAt'])",
+      "trustedUsers": {
+        ".validate": "newData.isNumber() && newData.val() >= 0"
+      },
+      "buyers": {
+        ".validate": "newData.isNumber() && newData.val() >= 0"
+      },
+      "updatedAt": {
+        ".validate": "newData.isNumber() && newData.val() > 0"
+      },
+      "$other": {
+        ".validate": false
+      }
     }
   }
 }
