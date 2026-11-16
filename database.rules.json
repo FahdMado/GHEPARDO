@@ -50,7 +50,7 @@
         ".write": "auth != null && auth.token.admin === true",
         ".validate": "newData.hasChildren(['email','timestampMs'])",
         "email": {
-          ".validate": "newData.isString() && newData.val().length >= 5 && newData.val().length <= 254 && newData.val().matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}$/)"
+          ".validate": "newData.isString() && newData.val().length >= 5 && newData.val().length <= 254 && newData.val().matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$/)"
         },
         "timestampMs": {
           ".validate": "newData.isNumber() && newData.val() <= now + 60000 && newData.val() >= now - 86400000"
