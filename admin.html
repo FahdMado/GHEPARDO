@@ -215,6 +215,24 @@
     const logoutButton = document.getElementById("admin-logout");
     let stopOrders = null, stopSubscribers = null, stopProducts = null;
     let cachedProducts = {};
+    let latestOrdersForStats = [];
+    let latestSubscribersForStats = {};
+    function publishPublicStats() {
+      const subscriberContacts = Object.values(latestSubscribersForStats || {})
+        .map(item => String(item.email || "").trim().toLowerCase()).filter(Boolean);
+      const orderContacts = latestOrdersForStats
+        .map(order => String(order.contact || "").trim().toLowerCase()).filter(Boolean);
+      const verifiedBuyerContacts = latestOrdersForStats
+        .filter(order => order.status === "confirmed")
+        .map(order => String(order.contact || "").trim().toLowerCase()).filter(Boolean);
+      const trustedUsers = new Set([...subscriberContacts, ...orderContacts]);
+      const buyers = new Set(verifiedBuyerContacts);
+      set(ref(db, "publicStats"), {
+        trustedUsers: trustedUsers.size,
+        buyers: buyers.size,
+        updatedAt: Date.now()
+      }).catch(error => console.warn("Could not refresh public GHEPARDO stats:", error));
+    }
 
     function escapeHTML(value) {
       return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -250,6 +268,8 @@
         const data = snapshot.val() || {};
         const orders = Object.entries(data).map(([id, order]) => ({ id, ...order }))
           .sort((a, b) => (b.timestampMs || 0) - (a.timestampMs || 0));
+        latestOrdersForStats = orders;
+        publishPublicStats();
         document.getElementById("stat-orders").textContent = orders.length;
         document.getElementById("stat-rev").textContent = orders
           .filter(order => order.status === "confirmed")
@@ -271,6 +291,8 @@
 
       stopSubscribers = onValue(ref(db, "subscribers"), snapshot => {
         const data = snapshot.val() || {}, subscribers = Object.values(data);
+        latestSubscribersForStats = data;
+        publishPublicStats();
         document.getElementById("stat-subs").textContent = subscribers.length;
         document.getElementById("subs-list").innerHTML = subscribers.length
           ? subscribers.map(item => "✉️ " + escapeHTML(item.email)).join("<br>") : "No subscribers yet.";
