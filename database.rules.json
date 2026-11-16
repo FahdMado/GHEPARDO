@@ -77,16 +77,19 @@
           ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 100000"
         },
         "category": {
-          ".validate": "newData.val() === 'dashboard' || newData.val() === 'notion' || newData.val() === 'tools' || newData.val() === 'digital'"
+          ".validate": "newData.val() === 'dashboard' || newData.val() === 'notion' || newData.val() === 'tools' || newData.val() === 'digital' || newData.val() === 'money' || newData.val() === 'ai' || newData.val() === 'commerce' || newData.val() === 'small-business' || newData.val() === 'travel' || newData.val() === 'mindset' || newData.val() === 'daily'"
         },
         "status": {
-          ".validate": "newData.val() === 'draft' || newData.val() === 'published'"
+          ".validate": "newData.val() === 'draft' || newData.val() === 'published' || newData.val() === 'coming_soon'"
         },
         "stock": {
           ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100000"
         },
         "badge": {
           ".validate": "newData.isString() && newData.val().length <= 30"
+        },
+        "emoji": {
+          ".validate": "newData.isString() && newData.val().length <= 12"
         },
         "imageData": {
           ".validate": "newData.isString() && newData.val().length <= 550000"
