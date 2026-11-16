@@ -178,7 +178,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
 
     const loginForm = document.getElementById("admin-login-form");
@@ -303,6 +303,10 @@
       }
 
       try {
+        if (!user.emailVerified) {
+          await sendEmailVerification(user);
+          throw new Error("verification-email-sent");
+        }
         let token = await user.getIdTokenResult();
         if (token.claims.admin !== true) {
           await claimAdmin();
@@ -315,7 +319,7 @@
       } catch (error) {
         await signOut(auth);
         lock.style.display = "flex";
-        loginError.textContent = "This account is not authorized as the GHEPARDO owner. Verify the configured owner email and email verification.";
+        loginError.textContent = error.message === "verification-email-sent" ? "A verification email was sent. Verify your email, then sign in again." : "This account is not authorized as the GHEPARDO owner. Check the configured owner email.";
       }
     });
   </script>
