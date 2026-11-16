@@ -3,7 +3,7 @@
     "orders": {
       ".read": "auth != null && auth.token.admin === true",
       "$orderId": {
-        ".write": "(auth != null && auth.token.admin === true) || (!data.exists() && newData.exists())",
+        ".write": "auth != null && auth.token.admin === true",
         ".validate": "newData.hasChildren(['customerName','contact','paymentReference','items','totalEGP','status','timestampMs'])",
         "customerName": {
           ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 100"
@@ -47,7 +47,7 @@
     "subscribers": {
       ".read": "auth != null && auth.token.admin === true",
       "$subscriberId": {
-        ".write": "(auth != null && auth.token.admin === true) || (!data.exists() && newData.exists())",
+        ".write": "auth != null && auth.token.admin === true",
         ".validate": "newData.hasChildren(['email','timestampMs'])",
         "email": {
           ".validate": "newData.isString() && newData.val().length >= 5 && newData.val().length <= 254 && newData.val().matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}$/)"
