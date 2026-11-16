@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GHEPARDO | Admin Command Center</title>
+  <link rel="icon" type="image/png" href="Logo.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070606;
+      --card: #120f0e;
+      --gold: #e5a93c;
+      --gold-light: #f8cf7a;
+      --border: rgba(229, 169, 60, 0.25);
+      --text: #f5f2eb;
+      --muted: #a69d8e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: 18px 4% 60px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 22px;
+      gap: 10px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand img { width: 38px; height: 38px; object-fit: contain; }
+    .brand h1 { font-family: 'Cinzel', serif; font-size: 1.15rem; color: var(--gold-light); }
+    .btn {
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      color: #000;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--gold-light);
+      padding: 7px 12px;
+      border-radius: 50px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-card span { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; }
+    .stat-card strong { font-size: 1.35rem; color: var(--gold-light); }
+
+    h2 { font-family: 'Cinzel', serif; color: var(--gold-light); font-size: 1.15rem; margin: 20px 0 12px; }
+    .order-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+    .badge {
+      padding: 4px 10px;
+      border-radius: 50px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .pending { background: rgba(229, 169, 60, 0.2); color: var(--gold-light); border: 1px solid var(--gold); }
+    .confirmed { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border: 1px solid #2ecc71; }
+    .order-meta { font-size: 0.84rem; color: var(--muted); line-height: 1.6; margin-bottom: 10px; }
+    .order-items {
+      background: #0a0808;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      margin-bottom: 12px;
+    }
+    .order-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    #lock-screen {
+      position: fixed;
+      inset: 0;
+      background: #070606;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .lock-box {
+      background: var(--card);
+      border: 1px solid var(--gold);
+      border-radius: 22px;
+      padding: 28px;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+    .lock-box input {
+      width: 100%;
+      background: #080707;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 12px;
+      border-radius: 12px;
+      margin: 16px 0;
+      text-align: center;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="lock-screen">
+    <div class="lock-box">
+      <img src="Logo.png" alt="GHEPARDO" style="width:60px; margin-bottom:10px;" />
+      <h2 style="margin:0 0 6px;">ADMIN ACCESS</h2>
+      <p style="font-size:0.8rem; color:var(--muted);">Enter GHEPARDO Command PIN</p>
+      <input type="password" id="pin-input" placeholder="••••••" />
+      <button class="btn" style="width:100%;" onclick="unlockAdmin()">Unlock Dashboard →</button>
+    </div>
+  </div>
+
+  <div class="topbar">
+    <div class="brand">
+      <img src="Logo.png" alt="Logo" />
+      <h1>GHEPARDO ADMIN</h1>
+    </div>
+    <a href="index.html" class="btn-outline">← Live Store</a>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card"><span>Total Orders</span><strong id="stat-orders">0</strong></div>
+    <div class="stat-card"><span>Revenue (EGP)</span><strong id="stat-rev">0</strong></div>
+    <div class="stat-card"><span>Subscribers</span><strong id="stat-subs">0</strong></div>
+  </div>
+
+  <h2>CUSTOMER ORDERS</h2>
+  <div id="orders-list"><p style="color:var(--muted); font-size:0.85rem;">Loading orders...</p></div>
+
+  <h2>NEWSLETTER SUBSCRIBERS</h2>
+  <div id="subs-list" class="order-card" style="font-size:0.85rem; color:var(--muted);">Loading subscribers...</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    const ADMIN_PIN = "202600";
+
+    window.unlockAdmin = function() {
+      const val = document.getElementById('pin-input').value;
+      if (val === ADMIN_PIN) {
+        document.getElementById('lock-screen').style.display = 'none';
+        sessionStorage.setItem('ghepardo_admin', '1');
+      } else {
+        alert('Incorrect PIN');
+      }
+    };
+
+    if (sessionStorage.getItem('ghepardo_admin') === '1') {
+      document.getElementById('lock-screen').style.display = 'none';
+    }
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD0S16iK5sxnnWb_s4_l41Op1fJE3fZNbI",
+      authDomain: "ghepardo-1.firebaseapp.com",
+      databaseURL: "https://ghepardo-1-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "ghepardo-1",
+      storageBucket: "ghepardo-1.firebasestorage.app",
+      messagingSenderId: "814705402338",
+      appId: "1:814705402338:web:a3e7541baf91e6d95099bb"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    onValue(ref(db, 'orders'), (snap) => {
+      const list = document.getElementById('orders-list');
+      list.innerHTML = '';
+      const data = snap.val();
+
+      if (!data) {
+        document.getElementById('stat-orders').innerText = '0';
+        document.getElementById('stat-rev').innerText = '0';
+        list.innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">No orders yet. Once a customer places an order, it appears here live.</p>';
+        return;
+      }
+
+      const docs = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+      docs.sort((a, b) => (b.timestampMs || 0) - (a.timestampMs || 0));
+
+      let totalRev = 0;
+      document.getElementById('stat-orders').innerText = docs.length;
+
+      docs.forEach((o) => {
+        if (o.status === 'confirmed') totalRev += Number(o.totalEGP || 0);
+        const itemsHtml = (o.items || []).map(i => `• ${i.title} — <b>${i.price} EGP</b>`).join('<br>');
+        const statusClass = o.status === 'confirmed' ? 'confirmed' : 'pending';
+
+        list.innerHTML += `
+          <div class="order-card">
+            <div class="order-top">
+              <strong>${o.customerName || 'Customer'}</strong>
+              <span class="badge ${statusClass}">${o.status || 'pending'}</span>
+            </div>
+            <div class="order-meta">
+              📞 Contact: <b>${o.contact}</b><br>
+              💳 Ref: <b>${o.paymentReference}</b><br>
+              💰 Total: <b style="color:var(--gold-light);">${o.totalEGP} EGP</b>
+            </div>
+            <div class="order-items">${itemsHtml}</div>
+            <div class="order-actions">
+              <button class="btn" onclick="confirmOrder('${o.id}')">✓ Mark Confirmed</button>
+              <button class="btn-outline" style="color:#ff6b6b; border-color:#ff6b6b;" onclick="deleteOrder('${o.id}')">Delete</button>
+            </div>
+          </div>
+        `;
+      });
+      document.getElementById('stat-rev').innerText = totalRev;
+    });
+
+    onValue(ref(db, 'subscribers'), (snap) => {
+      const data = snap.val();
+      const box = document.getElementById('subs-list');
+      if (!data) {
+        document.getElementById('stat-subs').innerText = '0';
+        box.innerText = 'No subscribers yet.';
+        return;
+      }
+      const list = Object.values(data);
+      document.getElementById('stat-subs').innerText = list.length;
+      box.innerHTML = list.map(s => '✉️ ' + s.email).join('<br>');
+    });
+
+    window.confirmOrder = async function(id) {
+      await update(ref(db, 'orders/' + id), { status: "confirmed" });
+    };
+
+    window.deleteOrder = async function(id) {
+      if (confirm('Delete this order record?')) {
+        await remove(ref(db, 'orders/' + id));
+      }
+    };
+  </script>
+</body>
+</html>
