@@ -264,7 +264,7 @@
             <div class="order-top"><strong>${escapeHTML(order.customerName || "Customer")}</strong><span class="badge ${status}">${escapeHTML(order.status || "pending")}</span></div>
             <div class="order-meta">📞 Contact: <b>${escapeHTML(order.contact)}</b><br>💳 Ref: <b>${escapeHTML(order.paymentReference)}</b><br>💰 Total: <b style="color:var(--gold-light);">${escapeHTML(order.totalEGP)} EGP</b></div>
             <div class="order-items">${itemHtml}</div>
-            <div class="order-actions"><button class="btn" data-confirm="${escapeHTML(order.id)}">✓ Mark Confirmed</button><button class="btn-outline" data-deliver="${escapeHTML(order.id)}">Prepare delivery</button><button class="btn-outline" data-delete="${escapeHTML(order.id)}" style="color:#ff6b6b;border-color:#ff6b6b;">Delete</button></div>
+            <div class="order-actions">${order.status === "confirmed" && order.downloadToken ? `<button class="btn" data-copy-link="${escapeHTML(order.downloadToken)}">Copy customer download link</button>` : `<button class="btn" data-confirm="${escapeHTML(order.id)}">✓ Confirm payment & release files</button>`}<button class="btn-outline" data-delete="${escapeHTML(order.id)}" style="color:#ff6b6b;border-color:#ff6b6b;">Delete</button></div>
           </div>`;
         }).join("");
       }, error => { document.getElementById("orders-list").textContent = "Could not load orders: " + error.message; });
@@ -280,12 +280,21 @@
     document.getElementById("orders-list").addEventListener("click", async event => {
       const confirmId = event.target.closest("[data-confirm]")?.dataset.confirm;
       const deleteId = event.target.closest("[data-delete]")?.dataset.delete;
-      const deliverId = event.target.closest("[data-deliver]")?.dataset.deliver;
+      const copyToken = event.target.closest("[data-copy-link]")?.dataset.copyLink;
       try {
-        if (confirmId) await update(ref(db, "orders/" + confirmId), { status: "confirmed" });
-        if (deleteId && confirm("Delete this order record?")) await remove(ref(db, "orders/" + deleteId));
-        if (deliverId) await prepareDelivery(deliverId);
-      } catch (error) { alert("The action could not be completed. Check administrator access."); }
+        if (confirmId) await confirmAndReleaseDownloads(confirmId);
+        if (deleteId && confirm("Delete this order record?")) {
+          const orderSnap = await get(ref(db, "orders/" + deleteId));
+          const oldOrder = orderSnap.val();
+          if (oldOrder?.downloadToken) await remove(ref(db, "downloads/" + oldOrder.downloadToken));
+          await remove(ref(db, "orders/" + deleteId));
+        }
+        if (copyToken) {
+          const url = new URL("download.html?token=" + copyToken, window.location.href).href;
+          try { await navigator.clipboard.writeText(url); alert("Customer download link copied."); }
+          catch (_) { prompt("Copy the customer's secure download link:", url); }
+        }
+      } catch (error) { alert(error.message || "The action could not be completed. Check administrator access."); }
     });
 
 
@@ -313,27 +322,38 @@
       }catch(error){msg.textContent=error.message||"Could not save product. Check Firebase rules.";}finally{button.disabled=false;}
     });
     async function downloadProductFile(productId){const snap=await get(ref(db,"productFiles/"+productId)),file=snap.val();if(!file)throw Error("No digital file has been uploaded.");if(file.fileData){const link=document.createElement("a");link.href=file.fileData;link.download=file.fileName||"GHEPARDO-product";document.body.appendChild(link);link.click();link.remove();}else if(file.downloadUrl){window.open(file.downloadUrl,"_blank","noopener");}else{throw Error("No file is available.");}}
-    async function prepareDelivery(orderId){
-      const popup=window.open("about:blank","_blank");
-      try{
-        const snap=await get(ref(db,"orders/"+orderId)),order=snap.val();
-        if(!order)throw Error("Order not found.");
-        if(order.status!=="confirmed")throw Error("Verify payment and mark the order Confirmed before preparing delivery.");
-        const items=Array.isArray(order.items)?order.items:Object.values(order.items||{}),lines=[];
-        for(const item of items){
-          if(!item.productId){lines.push(item.title+": file not linked to this order.");continue;}
-          const fileSnap=await get(ref(db,"productFiles/"+item.productId)),file=fileSnap.val();
-          if(file?.fileData){
-            const link=document.createElement("a");link.href=file.fileData;link.download=file.fileName||"GHEPARDO-product";document.body.appendChild(link);link.click();link.remove();
-            lines.push(item.title+": downloaded to your device; attach the file to this message.");
-          }else if(file?.downloadUrl){lines.push(item.title+": "+file.downloadUrl);}
-          else{lines.push(item.title+": delivery file not configured.");}
-        }
-        const message="Hello "+(order.customerName||"there")+", your GHEPARDO order is confirmed.\n\n"+lines.join("\n")+"\n\nThank you for choosing GHEPARDO.";
-        const phone=String(order.contact||"").replace(/[^0-9]/g,"");
-        if(phone.length>=10){const waPhone=phone.startsWith("0")?"2"+phone:phone;if(popup)popup.location.href="https://wa.me/"+waPhone+"?text="+encodeURIComponent(message);}
-        else{if(popup)popup.close();await navigator.clipboard.writeText(message);alert("Delivery message copied. Attach the downloaded product files to your customer message.");}
-      }catch(error){if(popup)popup.close();alert(error.message||"Could not prepare delivery.");}
+    async function confirmAndReleaseDownloads(orderId) {
+      const orderSnap = await get(ref(db, "orders/" + orderId));
+      const order = orderSnap.val();
+      if (!order) throw new Error("Order not found.");
+      if (order.status === "confirmed") throw new Error("This order is already confirmed.");
+      if (!order.downloadToken || !/^[a-f0-9]{48}$/.test(order.downloadToken)) throw new Error("This order has no valid customer download token. Ask the customer to place the order again after the checkout update.");
+      const items = Array.isArray(order.items) ? order.items : Object.values(order.items || {});
+      const files = [];
+      for (const item of items) {
+        if (!item.productId) throw new Error("A product is not linked to this order: " + (item.title || "Unknown item"));
+        const fileSnap = await get(ref(db, "productFiles/" + item.productId));
+        const file = fileSnap.val();
+        if (!file || (!file.fileData && !file.downloadUrl)) throw new Error("Upload a digital file for '" + item.title + "' before confirming this order.");
+        files.push({
+          title: String(item.title || "GHEPARDO product"),
+          fileName: file.fileName || (String(item.title || "product") + ".file"),
+          fileType: file.fileType || "application/octet-stream",
+          fileData: file.fileData || null,
+          downloadUrl: file.downloadUrl || null
+        });
+      }
+      if (!files.length) throw new Error("No downloadable files were found for this order.");
+      const now = Date.now();
+      await set(ref(db, "downloads/" + order.downloadToken), {
+        files,
+        createdAt: now,
+        expiresAt: now + 30 * 24 * 60 * 60 * 1000
+      });
+      await update(ref(db, "orders/" + orderId), { status: "confirmed" });
+      const customerUrl = new URL("download.html?token=" + order.downloadToken, window.location.href).href;
+      try { await navigator.clipboard.writeText(customerUrl); alert("Payment confirmed. Customer downloads are now unlocked for 30 days. The secure link was copied to your clipboard."); }
+      catch (_) { alert("Payment confirmed. Customer downloads are now unlocked for 30 days. Customer link: " + customerUrl); }
     }
 
     onAuthStateChanged(auth, async user => {
