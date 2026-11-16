@@ -178,35 +178,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
-
-    const loginForm = document.getElementById("admin-login-form");
-    const loginError = document.getElementById("login-error");
-    let dashboardStarted = false;
-
-    loginForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const button = loginForm.querySelector("button");
-      button.disabled = true;
-      button.textContent = "Signing in...";
-      loginError.textContent = "";
-      try {
-        await signInWithEmailAndPassword(
-          auth,
-          document.getElementById("admin-email").value.trim(),
-          document.getElementById("admin-password").value
-        );
-      } catch (error) {
-        loginError.textContent = "Sign-in failed. Check your email and password.";
-      } finally {
-        button.disabled = false;
-        button.textContent = "Sign in securely →";
-      }
-    });
-
-    document.getElementById("admin-logout").addEventListener("click", () => signOut(auth));
-
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    const OWNER_UID = "pDQty2R4KLdv3PBahimLYsG30S42";
     const firebaseConfig = {
       apiKey: "AIzaSyD0S16iK5sxnnWb_s4_l41Op1fJE3fZNbI",
       authDomain: "ghepardo-1.firebaseapp.com",
@@ -216,111 +189,95 @@
       messagingSenderId: "814705402338",
       appId: "1:814705402338:web:a3e7541baf91e6d95099bb"
     };
-
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);\n    const auth = getAuth(app);\n    const functions = getFunctions(app, "europe-west1");\n    const claimAdmin = httpsCallable(functions, "claimGhepardoAdmin");
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+    const loginForm = document.getElementById("admin-login-form");
+    const loginError = document.getElementById("login-error");
+    const lock = document.getElementById("lock-screen");
+    const logoutButton = document.getElementById("admin-logout");
+    let stopOrders = null, stopSubscribers = null;
 
-    function startAdminDashboard() {\n      if (dashboardStarted) return;\n      dashboardStarted = true;\n      onValue(ref(db, 'orders'), (snap) => {
-      const list = document.getElementById('orders-list');
-      list.innerHTML = '';
-      const data = snap.val();
-
-      if (!data) {
-        document.getElementById('stat-orders').innerText = '0';
-        document.getElementById('stat-rev').innerText = '0';
-        list.innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">No orders yet. Once a customer places an order, it appears here live.</p>';
-        return;
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[char]);
+    }
+    function stopDashboard() {
+      if (stopOrders) stopOrders();
+      if (stopSubscribers) stopSubscribers();
+      stopOrders = null; stopSubscribers = null;
+    }
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = loginForm.querySelector("button");
+      button.disabled = true; button.textContent = "Signing in..."; loginError.textContent = "";
+      try {
+        await signInWithEmailAndPassword(auth,
+          document.getElementById("admin-email").value.trim(),
+          document.getElementById("admin-password").value);
+      } catch (error) {
+        loginError.textContent = "Sign-in failed. Check your email and password.";
+      } finally {
+        button.disabled = false; button.textContent = "Sign in securely →";
       }
-
-      const docs = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-      docs.sort((a, b) => (b.timestampMs || 0) - (a.timestampMs || 0));
-
-      let totalRev = 0;
-      document.getElementById('stat-orders').innerText = docs.length;
-
-      docs.forEach((o) => {
-        if (o.status === 'confirmed') totalRev += Number(o.totalEGP || 0);
-        const itemsHtml = (o.items || []).map(i => `• ${i.title} — <b>${i.price} EGP</b>`).join('<br>');
-        const statusClass = o.status === 'confirmed' ? 'confirmed' : 'pending';
-
-        list.innerHTML += `
-          <div class="order-card">
-            <div class="order-top">
-              <strong>${o.customerName || 'Customer'}</strong>
-              <span class="badge ${statusClass}">${o.status || 'pending'}</span>
-            </div>
-            <div class="order-meta">
-              📞 Contact: <b>${o.contact}</b><br>
-              💳 Ref: <b>${o.paymentReference}</b><br>
-              💰 Total: <b style="color:var(--gold-light);">${o.totalEGP} EGP</b>
-            </div>
-            <div class="order-items">${itemsHtml}</div>
-            <div class="order-actions">
-              <button class="btn" onclick="confirmOrder('${o.id}')">✓ Mark Confirmed</button>
-              <button class="btn-outline" style="color:#ff6b6b; border-color:#ff6b6b;" onclick="deleteOrder('${o.id}')">Delete</button>
-            </div>
-          </div>
-        `;
-      });
-      document.getElementById('stat-rev').innerText = totalRev;
     });
+    logoutButton.addEventListener("click", () => signOut(auth));
 
-    onValue(ref(db, 'subscribers'), (snap) => {
-      const data = snap.val();
-      const box = document.getElementById('subs-list');
-      if (!data) {
-        document.getElementById('stat-subs').innerText = '0';
-        box.innerText = 'No subscribers yet.';
-        return;
-      }
-      const list = Object.values(data);
-      document.getElementById('stat-subs').innerText = list.length;
-      box.innerHTML = list.map(s => '✉️ ' + s.email).join('<br>');
-    });
+    function startDashboard() {
+      stopDashboard();
+      stopOrders = onValue(ref(db, "orders"), snapshot => {
+        const data = snapshot.val() || {};
+        const orders = Object.entries(data).map(([id, order]) => ({ id, ...order }))
+          .sort((a, b) => (b.timestampMs || 0) - (a.timestampMs || 0));
+        document.getElementById("stat-orders").textContent = orders.length;
+        document.getElementById("stat-rev").textContent = orders
+          .filter(order => order.status === "confirmed")
+          .reduce((sum, order) => sum + Number(order.totalEGP || 0), 0);
+        const list = document.getElementById("orders-list");
+        if (!orders.length) { list.innerHTML = '<p style="color:var(--muted);font-size:.85rem;">No orders yet.</p>'; return; }
+        list.innerHTML = orders.map(order => {
+          const items = Array.isArray(order.items) ? order.items : Object.values(order.items || {});
+          const itemHtml = items.map(item => `• ${escapeHTML(item.title)} — <b>${escapeHTML(item.price)} EGP</b>`).join("<br>");
+          const status = order.status === "confirmed" ? "confirmed" : "pending";
+          return `<div class="order-card">
+            <div class="order-top"><strong>${escapeHTML(order.customerName || "Customer")}</strong><span class="badge ${status}">${escapeHTML(order.status || "pending")}</span></div>
+            <div class="order-meta">📞 Contact: <b>${escapeHTML(order.contact)}</b><br>💳 Ref: <b>${escapeHTML(order.paymentReference)}</b><br>💰 Total: <b style="color:var(--gold-light);">${escapeHTML(order.totalEGP)} EGP</b></div>
+            <div class="order-items">${itemHtml}</div>
+            <div class="order-actions"><button class="btn" data-confirm="${escapeHTML(order.id)}">✓ Mark Confirmed</button><button class="btn-outline" data-delete="${escapeHTML(order.id)}" style="color:#ff6b6b;border-color:#ff6b6b;">Delete</button></div>
+          </div>`;
+        }).join("");
+      }, error => { document.getElementById("orders-list").textContent = "Could not load orders: " + error.message; });
 
-    window.confirmOrder = async function(id) {
-      await update(ref(db, 'orders/' + id), { status: "confirmed" });
-    };
-
-    window.deleteOrder = async function(id) {
-      if (confirm('Delete this order record?')) {
-        await remove(ref(db, 'orders/' + id));
-      }
-    };
-
+      stopSubscribers = onValue(ref(db, "subscribers"), snapshot => {
+        const data = snapshot.val() || {}, subscribers = Object.values(data);
+        document.getElementById("stat-subs").textContent = subscribers.length;
+        document.getElementById("subs-list").innerHTML = subscribers.length
+          ? subscribers.map(item => "✉️ " + escapeHTML(item.email)).join("<br>") : "No subscribers yet.";
+      }, error => { document.getElementById("subs-list").textContent = "Could not load subscribers: " + error.message; });
     }
 
-    onAuthStateChanged(auth, async (user) => {
-      const lock = document.getElementById("lock-screen");
-      const logout = document.getElementById("admin-logout");
+    document.getElementById("orders-list").addEventListener("click", async event => {
+      const confirmId = event.target.closest("[data-confirm]")?.dataset.confirm;
+      const deleteId = event.target.closest("[data-delete]")?.dataset.delete;
+      try {
+        if (confirmId) await update(ref(db, "orders/" + confirmId), { status: "confirmed" });
+        if (deleteId && confirm("Delete this order record?")) await remove(ref(db, "orders/" + deleteId));
+      } catch (error) { alert("The action could not be completed. Check administrator access."); }
+    });
+
+    onAuthStateChanged(auth, async user => {
       if (!user) {
-        lock.style.display = "flex";
-        logout.style.display = "none";
-        dashboardStarted = false;
+        stopDashboard(); lock.style.display = "flex"; logoutButton.style.display = "none";
         document.getElementById("orders-list").textContent = "Sign in with the owner account to load orders.";
         document.getElementById("subs-list").textContent = "Administrator access required.";
         return;
       }
-
-      try {
-        if (!user.emailVerified) {
-          await sendEmailVerification(user);
-          throw new Error("verification-email-sent");
-        }
-        let token = await user.getIdTokenResult();
-        if (token.claims.admin !== true) {
-          await claimAdmin();
-          token = await user.getIdTokenResult(true);
-        }
-        if (token.claims.admin !== true) throw new Error("Admin claim missing");
-        lock.style.display = "none";
-        logout.style.display = "inline-block";
-        startAdminDashboard();
-      } catch (error) {
-        await signOut(auth);
-        lock.style.display = "flex";
-        loginError.textContent = error.message === "verification-email-sent" ? "A verification email was sent. Verify your email, then sign in again." : "This account is not authorized as the GHEPARDO owner. Check the configured owner email.";
+      if (user.uid !== OWNER_UID) {
+        loginError.textContent = "This Firebase account is not the authorized GHEPARDO owner.";
+        await signOut(auth); return;
       }
+      lock.style.display = "none"; logoutButton.style.display = "inline-block"; startDashboard();
     });
   </script>
 </body>
