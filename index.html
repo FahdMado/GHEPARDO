@@ -597,10 +597,10 @@
     </div>
 
     <div class="filter-bar">
-      <button class="filter-btn active" onclick="filterProducts('all', this)">All Assets</button>
-      <button class="filter-btn" onclick="filterProducts('dashboard', this)">Business Dashboards</button>
-      <button class="filter-btn" onclick="filterProducts('notion', this)">Notion Templates</button>
-      <button class="filter-btn" onclick="filterProducts('tools', this)">Productivity Tools</button>
+      <button class="filter-btn active" onclick="filterProducts('all', this)">All Products</button>
+      <button class="filter-btn" onclick="filterProducts('dashboard', this)">Dashboards</button>
+      <button class="filter-btn" onclick="filterProducts('notion', this)">Templates</button>
+      <button class="filter-btn" onclick="filterProducts('tools', this)">Tools</button>
     </div>
 
     <div class="products-grid" id="products-grid"></div>
@@ -705,7 +705,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD0S16iK5sxnnWb_s4_l41Op1fJE3fZNbI",
@@ -721,39 +721,34 @@
     const db = getDatabase(app);
     const OWNER_WHATSAPP = "201206692683";
 
-    const products = [
-      { id: 1, title: "Factory Live Production Dashboard", category: "dashboard", badge: "BEST SELLER", emoji: "📊", desc: "Real-time KPI & production tracking web dashboard powered by Firebase & GitHub Pages.", price: 750 },
-      { id: 2, title: "GHEPARDO Executive Notion OS", category: "notion", badge: "NEW", emoji: "🗂️", desc: "All-in-one Notion command center for projects, SOPs, finance tracking, and daily execution.", price: 350 },
-      { id: 3, title: "Smart Inventory & Kanban Excel System", category: "tools", badge: "PRO", emoji: "⚡", desc: "Automated Excel + VBA inventory, supermarket Kanban & cost control workbook.", price: 490 },
-      { id: 4, title: "Personal Wealth & Investment Tracker", category: "tools", badge: "POPULAR", emoji: "💎", desc: "Complete financial calculator & Thndr/gold portfolio tracker tailored for smart investors.", price: 290 }
-    ];
-
+    let products = [];
     let cart = [];
+    let activeProductFilter = "all";
+    onValue(ref(db, "products"), snapshot => {
+      const data = snapshot.val() || {};
+      products = Object.entries(data).map(([id, product]) => Object.assign({id}, product)).filter(p => p.status === "published" && Number(p.stock || 0) > 0);
+      renderProducts(activeProductFilter);
+    }, error => { document.getElementById("products-grid").textContent = "Products are temporarily unavailable."; console.error(error); });
 
-    window.renderProducts = function(filter = 'all') {
-      const grid = document.getElementById('products-grid');
-      grid.innerHTML = '';
-      const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+    function safeText(value) {
+      return String(value ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;");
+    }
+    window.renderProducts = function(filter = "all") {
+      activeProductFilter = filter;
+      const grid = document.getElementById("products-grid");
+      grid.innerHTML = "";
+      const filtered = filter === "all" ? products : products.filter(p => p.category === filter);
+      if (!filtered.length) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:35px 18px;color:var(--text-muted)"><h4 style="color:var(--gold-light);margin-bottom:8px">New releases are on the way</h4><p>Our real GHEPARDO products will appear here soon.</p></div>';
+        return;
+      }
       filtered.forEach(p => {
-        grid.innerHTML += `
-          <div class="product-card">
-            <div class="product-banner">
-              <span class="product-badge">${p.badge}</span>
-              <div class="product-emoji">${p.emoji}</div>
-              <div class="product-cat">${p.category}</div>
-            </div>
-            <div class="product-body">
-              <h4>${p.title}</h4>
-              <p>${p.desc}</p>
-              <div class="product-footer">
-                <div class="price">${p.price} <small>EGP</small></div>
-                <button class="btn-gold" style="padding:8px 14px; font-size:0.8rem;" onclick="addToCart(${p.id})">Buy Now +</button>
-              </div>
-            </div>
-          </div>`;
+        const img = p.imageData || p.imageUrl || "";
+        const visual = img ? '<img src="' + safeText(img) + '" alt="' + safeText(p.title) + '" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">' : '<div class="product-emoji">' + safeText(p.emoji || "✦") + '</div>';
+        const card = '<div class="product-card"><div class="product-banner" style="position:relative;overflow:hidden">' + visual + '<span class="product-badge">' + safeText(p.badge || "GHEPARDO") + '</span>' + (img ? "" : '<div class="product-cat">' + safeText(p.category || "digital") + '</div>') + '</div><div class="product-body"><h4>' + safeText(p.title) + '</h4><p>' + safeText(p.description || "") + '</p><div class="product-footer"><div class="price">' + Number(p.price).toLocaleString() + '<small> EGP</small></div><button class="btn-gold" style="padding:8px 14px;font-size:.8rem" onclick="addToCart(\'' + safeText(p.id) + '\')">Buy Now +</button></div></div></div>';
+        grid.insertAdjacentHTML("beforeend", card);
       });
     };
-
     window.filterProducts = function(cat, btn) {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -761,7 +756,9 @@
     };
 
     window.addToCart = function(id) {
-      cart.push(products.find(p => p.id === id));
+      const product = products.find(p => String(p.id) === String(id));
+      if (!product) return;
+      cart.push({ id: product.id, title: product.title, price: Number(product.price) });
       updateCartUI();
       openCart();
     };
@@ -773,7 +770,8 @@
 
     function updateCartUI() {
       document.getElementById('cart-count').innerText = cart.length;
-      document.getElementById('mob-cart-count').innerText = cart.length;
+      const mobileCount = document.getElementById("mob-cart-count");
+      if (mobileCount) mobileCount.innerText = cart.length;
       const list = document.getElementById('cart-items');
       const totalEl = document.getElementById('cart-total');
       if (cart.length === 0) {
@@ -818,7 +816,7 @@
           customerName: name.trim(),
           contact: contact.trim(),
           paymentReference: refNum.trim(),
-          items: cart.map(i => ({ title: i.title, price: i.price })),
+          items: cart.map(i => ({ productId: i.id, title: i.title, price: i.price })),
           totalEGP: total,
           status: "pending",
           timestampMs: Date.now()
