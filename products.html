@@ -624,6 +624,39 @@
       .stat-number { transition: none !important; }
     }
 
+  
+    /* GHEPARDO payment methods marquee */
+    .payment-showcase { margin: 4px 0 16px; padding: 17px 0 13px; border:1px solid var(--border-gold); border-radius:16px; overflow:hidden; background:linear-gradient(145deg,#17120f,#0a0908); }
+    .payment-showcase-heading { text-align:center; padding:0 16px 13px; }
+    .payment-eyebrow { color:var(--gold); font-size:.62rem; letter-spacing:2px; font-weight:800; }
+    .payment-showcase-heading h4 { color:#fff; font-size:1.12rem; margin:6px 0; }
+    .payment-zero-fee { display:inline-block; color:var(--gold-light); font-size:.9rem; margin:2px 0 5px; }
+    .payment-showcase-heading p { color:var(--text-muted); font-size:.72rem; margin:0 auto; max-width:350px; line-height:1.6; }
+    .payment-marquee { overflow:hidden; width:100%; padding:5px 0 10px; mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent); }
+    .payment-marquee-track { display:flex; width:max-content; animation:ghepardo-payment-scroll 38s linear infinite; }
+    .payment-marquee:hover .payment-marquee-track { animation-play-state:paused; }
+    .payment-marquee-group { display:flex; align-items:center; gap:10px; padding:0 5px; }
+    .payment-chip { display:inline-flex; align-items:center; justify-content:center; min-width:max-content; min-height:39px; padding:8px 14px; border:1px solid rgba(218,174,93,.32); border-radius:10px; background:#fff; color:#17120f; font-size:.76rem; font-weight:850; letter-spacing:.1px; white-space:nowrap; box-shadow:0 3px 12px rgba(0,0,0,.18); }
+    .payment-chip-1,.payment-chip-2,.payment-chip-3,.payment-chip-4,.payment-chip-5,.payment-chip-6,.payment-chip-7,.payment-chip-8,.payment-chip-9 { font-weight:900; }
+    .payment-chip-1 { color:#1434a4; font-style:italic; font-size:1rem; }
+    .payment-chip-2 { color:#24245f; }
+    .payment-chip-3,.payment-chip-4 { color:#111; }
+    .payment-chip-5 { color:#635bff; }
+    .payment-chip-6 { color:#24508f; font-size:.68rem; }
+    .payment-chip-7 { color:#1763a6; }
+    .payment-chip-8 { color:#e34b35; }
+    .payment-chip-9 { color:#003087; }
+    .payment-chip-10 { color:#343434; }
+    .payment-chip-11 { color:#5a2b91; }
+    .payment-chip-12 { color:#e60000; }
+    .payment-chip-13 { color:#f36f21; }
+    .payment-chip-14 { color:#087c58; }
+    .payment-chip-15 { color:#137b48; }
+    .payment-chip-16 { color:#5b2c83; }
+    .payment-availability-note { color:#a99d8d; text-align:center; font-size:.62rem; line-height:1.55; padding:0 14px; margin:0; }
+    @keyframes ghepardo-payment-scroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+    @media(prefers-reduced-motion:reduce) { .payment-marquee-track { animation:none; } }
+
   </style>
 </head>
 <body data-page="products">
@@ -767,6 +800,51 @@
         <span style="color:var(--gold-light);" id="cart-total">0 EGP</span>
       </div>
 
+      <section class="payment-showcase" aria-label="Payment methods">
+        <div class="payment-showcase-heading">
+          <span class="payment-eyebrow">SIMPLE • SECURE • FLEXIBLE</span>
+          <h4>اختر كيف تدفع أموالك</h4>
+          <strong class="payment-zero-fee">رسوم منصة GHEPARDO: 0%</strong>
+          <p>اختر وسيلة الدفع المتاحة لك، وأكمل طلبك بسهولة. يتم تسليم المنتج بعد تأكيد الدفع.</p>
+        </div>
+        <div class="payment-marquee" role="region" aria-label="Payment method brands">
+          <div class="payment-marquee-track">
+            <div class="payment-marquee-group"><span class="payment-chip payment-chip-1">VISA</span>
+<span class="payment-chip payment-chip-2">Mastercard</span>
+<span class="payment-chip payment-chip-3">Apple Pay</span>
+<span class="payment-chip payment-chip-4">Google Pay</span>
+<span class="payment-chip payment-chip-5">Stripe</span>
+<span class="payment-chip payment-chip-6">American Express</span>
+<span class="payment-chip payment-chip-7">Maestro</span>
+<span class="payment-chip payment-chip-8">Discover</span>
+<span class="payment-chip payment-chip-9">PayPal</span>
+<span class="payment-chip payment-chip-10">Manual Payment</span>
+<span class="payment-chip payment-chip-11">InstaPay</span>
+<span class="payment-chip payment-chip-12">Vodafone Cash</span>
+<span class="payment-chip payment-chip-13">Orange Cash</span>
+<span class="payment-chip payment-chip-14">Etisalat Cash</span>
+<span class="payment-chip payment-chip-15">We Cash</span>
+<span class="payment-chip payment-chip-16">Paymob</span></div>
+            <div class="payment-marquee-group" aria-hidden="true"><span class="payment-chip payment-chip-1">VISA</span>
+<span class="payment-chip payment-chip-2">Mastercard</span>
+<span class="payment-chip payment-chip-3">Apple Pay</span>
+<span class="payment-chip payment-chip-4">Google Pay</span>
+<span class="payment-chip payment-chip-5">Stripe</span>
+<span class="payment-chip payment-chip-6">American Express</span>
+<span class="payment-chip payment-chip-7">Maestro</span>
+<span class="payment-chip payment-chip-8">Discover</span>
+<span class="payment-chip payment-chip-9">PayPal</span>
+<span class="payment-chip payment-chip-10">Manual Payment</span>
+<span class="payment-chip payment-chip-11">InstaPay</span>
+<span class="payment-chip payment-chip-12">Vodafone Cash</span>
+<span class="payment-chip payment-chip-13">Orange Cash</span>
+<span class="payment-chip payment-chip-14">Etisalat Cash</span>
+<span class="payment-chip payment-chip-15">We Cash</span>
+<span class="payment-chip payment-chip-16">Paymob</span></div>
+          </div>
+        </div>
+        <p class="payment-availability-note">المتاح حاليًا في المتجر: InstaPay وOrange Cash. بقية الوسائل المعروضة للتعريف وستُفعّل عند إتاحة بواباتها رسميًا. قد تفرض جهة الدفع رسومًا خاصة بها.</p>
+      </section>
       <div class="pay-method">
         <h5>1. Pay via InstaPay (Instant Link or QR)</h5>
         <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:8px;">Click the button below to pay directly or scan the QR code:</p>
