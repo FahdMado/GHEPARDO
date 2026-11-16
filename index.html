@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GHEPARDO | Build Digital Assets. Create Lasting Value.</title>
+  <title>GHEPARDO | Beyond One Industry. Beyond One Vision.</title>
+  <meta name="description" content="GHEPARDO is a multi-industry brand ecosystem connecting digital innovation, commerce, hospitality, fashion and future ventures." />
+  <meta name="theme-color" content="#080808" />
+  <meta property="og:title" content="GHEPARDO — Beyond One Industry. Beyond One Vision." />
+  <meta property="og:description" content="Building ideas, businesses, technology and experiences for a world of possibilities." />
   <link rel="icon" type="image/png" href="Logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -77,7 +81,33 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    nav { display: flex; gap: 22px; align-items: center; }
+    nav { display: flex; gap: 17px; align-items: center; }
+    .eyebrow { color:var(--gold); font-size:.72rem; letter-spacing:2.6px; text-transform:uppercase; font-weight:800; }
+    .hero h2 { letter-spacing:-1.8px; }
+    .hero-copy { max-width:640px; }
+    .hero-visual { min-height:420px; }
+    .hero-emblem-card { position:relative; overflow:hidden; }
+    .hero-emblem-card:before,.hero-emblem-card:after { content:""; position:absolute; border:1px solid rgba(229,169,60,.18); border-radius:50%; width:85%; aspect-ratio:1; }
+    .hero-emblem-card:after { width:110%; }
+    .hero-emblem-card img,.hero-emblem-tag { position:relative; z-index:1; }
+    .manifesto { max-width:980px; margin:0 auto; text-align:center; padding:24px 5% 55px; }
+    .manifesto h3 { font-family:Cinzel,serif; font-size:clamp(1.35rem,3vw,2.3rem); line-height:1.35; color:var(--text-main); margin:12px 0; }
+    .manifesto p { color:var(--text-muted); line-height:1.8; max-width:760px; margin:auto; }
+    .industry-card { text-align:left; min-height:250px; position:relative; overflow:hidden; }
+    .industry-card .number { color:var(--gold); font:700 .75rem Cinzel,serif; letter-spacing:2px; }
+    .industry-card h4 { font:700 1.2rem Cinzel,serif; margin:20px 0 10px; }
+    .industry-card .status { display:inline-block; margin-top:12px; color:var(--gold-light); font-size:.68rem; letter-spacing:1.2px; border:1px solid var(--border-gold); padding:5px 9px; border-radius:30px; }
+    .editorial-grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+    .editorial-panel { border:1px solid var(--border-gold); border-radius:22px; padding:30px; background:linear-gradient(145deg,#171210,#0b0908); }
+    .editorial-panel h4 { font:700 1.25rem Cinzel,serif; color:var(--gold-light); margin:12px 0; }
+    .editorial-panel p { color:var(--text-muted); line-height:1.75; font-size:.9rem; }
+    .mini-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .mini-card { background:#100d0c; border:1px solid rgba(229,169,60,.16); border-radius:16px; padding:20px; }
+    .mini-card strong { display:block; color:var(--gold-light); margin:9px 0; }
+    .mini-card p { color:var(--text-muted); font-size:.82rem; line-height:1.6; }
+    .text-link { color:var(--gold); text-decoration:none; font-weight:700; font-size:.85rem; }
+    .section-kicker { color:var(--gold); letter-spacing:2px; font-size:.68rem; font-weight:800; text-transform:uppercase; margin-bottom:10px; }
+    @media(max-width:860px){ .editorial-grid,.mini-grid{grid-template-columns:1fr;} .hero-visual{min-height:320px;} }
     nav a {
       color: var(--text-muted);
       text-decoration: none;
@@ -506,11 +536,7 @@
       </div>
     </a>
     <nav>
-      <a href="#home" class="active">Home</a>
-      <a href="#pillars">Solutions</a>
-      <a href="#products">Products</a>
-      <a href="#ventures">Ventures</a>
-      <a href="#contact">Contact</a>
+      <a href="#home" class="active">Home</a><a href="#about">About</a><a href="#solutions">Solutions</a><a href="#products">Products</a><a href="#portfolio">Portfolio</a><a href="#ventures">Ventures</a><a href="#insights">Insights</a><a href="#contact">Contact</a>
     </nav>
     <div class="header-actions">
       <button class="cart-btn" onclick="openCart()">🛒 Cart (<span id="cart-count">0</span>)</button>
@@ -519,54 +545,48 @@
   </header>
 
   <section id="home" class="hero">
-    <div>
-      <div class="hero-badge">GHEPARDO DIGITAL ECOSYSTEM</div>
-      <h2>BUILD DIGITAL ASSETS.<br><span>CREATE LASTING VALUE.</span></h2>
-      <p>GHEPARDO is more than a brand — it’s a vision to build a scalable digital ecosystem of smart dashboards, Notion systems, and commercial ventures that grow with you.</p>
+    <div class="hero-copy">
+      <div class="hero-badge">A MULTI-INDUSTRY BRAND ECOSYSTEM</div>
+      <h2>BEYOND ONE INDUSTRY.<br><span>BEYOND ONE VISION.</span></h2>
+      <p>GHEPARDO is an evolving brand ecosystem built to connect ideas, technology, commerce and experiences. One bold identity. Multiple worlds. A future designed to scale.</p>
       <div class="hero-btns">
-        <a href="#products" class="btn-gold">Explore Our Products →</a>
-        <a href="#pillars" class="btn-outline">▶ Discover Ecosystem</a>
+        <a href="#solutions" class="btn-gold">Explore Our World ↗</a>
+        <a href="#about" class="btn-outline">Discover GHEPARDO</a>
       </div>
       <div class="trust-strip">
-        <div class="trust-item"><strong>Global Vision</strong>Worldwide Delivery</div>
-        <div class="trust-item"><strong>Innovation</strong>Smart Automation</div>
-        <div class="trust-item"><strong>Partnership</strong>Growth Focused</div>
-        <div class="trust-item"><strong>Sustainability</strong>Built to Scale</div>
+        <div class="trust-item"><strong>One Identity</strong>One master brand</div>
+        <div class="trust-item"><strong>Four Worlds</strong>Connected industries</div>
+        <div class="trust-item"><strong>Global Mindset</strong>Built to expand</div>
+        <div class="trust-item"><strong>Long-Term Vision</strong>Designed to evolve</div>
       </div>
     </div>
+    <div class="hero-visual"><div class="hero-emblem-card">
+      <img src="Logo.png" alt="GHEPARDO master brand emblem" />
+      <div class="hero-emblem-tag">GHEPARDO</div>
+    </div></div>
+  </section>
 
-    <div class="hero-visual">
-      <div class="hero-emblem-card">
-        <img src="Logo.png" alt="GHEPARDO Cheetah Emblem" />
-        <div class="hero-emblem-tag">GHEPARDO</div>
-      </div>
+  <div class="manifesto">
+    <div class="eyebrow">THE MASTER BRAND</div>
+    <h3>One name. Many possibilities.<br><span style="color:var(--gold-light)">A vision without borders.</span></h3>
+    <p>From digital products and intelligent systems to hospitality, lifestyle and fashion, GHEPARDO is being shaped as a connected universe of businesses — united by one recognizable identity and a commitment to meaningful experiences.</p>
+  </div>
+
+  <section id="about">
+    <div class="section-title"><div class="section-kicker">The story behind the vision</div><h3>ABOUT GHEPARDO</h3><p>A founder-led vision with a global outlook and an evolving portfolio of industries.</p></div>
+    <div class="editorial-grid">
+      <div class="editorial-panel"><div class="eyebrow">OUR PURPOSE</div><h4>Built to create, connect and evolve.</h4><p>GHEPARDO brings together entrepreneurial thinking, digital development and brand-building under one master identity. We start with practical digital solutions and products, while laying the foundations for future businesses in complementary industries.</p></div>
+      <div class="editorial-panel"><div class="eyebrow">THE FOUNDER</div><h4>Strategy meets execution.</h4><p>Founded by Fahd, with a professional focus on development, digital follow-up and operational improvement. The ambition is to turn ideas into useful products, scalable systems and distinctive customer experiences.</p></div>
     </div>
   </section>
 
-  <section id="pillars">
-    <div class="section-title">
-      <h3>WHAT WE BUILD</h3>
-      <p>Three integrated pillars powering modern professionals and businesses</p>
-    </div>
+  <section id="solutions">
+    <div class="section-title"><div class="section-kicker">Our four connected worlds</div><h3>OUR INDUSTRIES</h3><p>One master brand with room to grow across industries — starting with digital innovation.</p></div>
     <div class="pillars-grid">
-      <div class="pillar-card">
-        <div class="pillar-icon">💻</div>
-        <h4>Digital Development</h4>
-        <p>Live operational dashboards, Firebase systems, and automated Excel/VBA workflows tailored for real-time tracking.</p>
-        <a href="#products">Explore Systems →</a>
-      </div>
-      <div class="pillar-card">
-        <div class="pillar-icon">📦</div>
-        <h4>Digital Products</h4>
-        <p>Ready-to-use Notion workspaces, executive dashboards, and financial calculators engineered for instant productivity.</p>
-        <a href="#products">Browse Store →</a>
-      </div>
-      <div class="pillar-card">
-        <div class="pillar-icon">🚀</div>
-        <h4>Digital Ventures</h4>
-        <p>Scalable lifestyle, fragrance, and commercial brand architectures designed for long-term market leadership.</p>
-        <a href="#ventures">View Ventures →</a>
-      </div>
+      <div class="pillar-card industry-card"><div class="number">01 / DIGITAL & TECHNOLOGY</div><div class="pillar-icon">✦</div><h4>Digital & Technology</h4><p>Websites, intelligent systems, automation, dashboards and digital transformation solutions.</p><span class="status">CURRENT LAUNCH FOCUS</span></div>
+      <div class="pillar-card industry-card"><div class="number">02 / COMMERCE & PRODUCTS</div><div class="pillar-icon">◇</div><h4>Commerce & Products</h4><p>Digital assets, online experiences, curated products and future GHEPARDO product lines.</p><span class="status">ACTIVE FOUNDATION</span></div>
+      <div class="pillar-card industry-card"><div class="number">03 / HOSPITALITY & LIFESTYLE</div><div class="pillar-icon">⌂</div><h4>Hospitality & Lifestyle</h4><p>Future concepts across restaurants, cafés, hospitality and lifestyle experiences.</p><span class="status">FUTURE VENTURE</span></div>
+      <div class="pillar-card industry-card"><div class="number">04 / FASHION & ACCESSORIES</div><div class="pillar-icon">✧</div><h4>Fashion & Accessories</h4><p>Apparel, accessories and distinctive collections built around a consistent brand language.</p><span class="status">FUTURE VENTURE</span></div>
     </div>
   </section>
 
@@ -586,21 +606,39 @@
     <div class="products-grid" id="products-grid"></div>
   </section>
 
+  <section id="portfolio">
+    <div class="section-title"><div class="section-kicker">Selected work & capabilities</div><h3>PORTFOLIO</h3><p>A growing showcase of systems, products, concepts and brand experiences.</p></div>
+    <div class="mini-grid">
+      <div class="mini-card"><div class="eyebrow">01 / SYSTEMS</div><strong>Operational Dashboards</strong><p>Digital tools designed to make information clearer and workflows more actionable.</p></div>
+      <div class="mini-card"><div class="eyebrow">02 / PRODUCTS</div><strong>Digital Product Design</strong><p>Practical templates, calculators and productivity assets for modern work.</p></div>
+      <div class="mini-card"><div class="eyebrow">03 / BRAND WORLDS</div><strong>Identity & Concepts</strong><p>Connected brand experiences created with consistency and room to scale.</p></div>
+    </div>
+  </section>
+
   <section id="ventures">
+    <div class="section-title"><div class="section-kicker">The roadmap ahead</div><h3>FUTURE VENTURES</h3><p>We are building the foundations today for the opportunities of tomorrow.</p></div>
+    <div class="editorial-grid">
+      <div class="editorial-panel"><div class="eyebrow">A CONNECTED PORTFOLIO</div><h4>Different industries. Shared standards.</h4><p>Future GHEPARDO ventures may take shape in food, cafés, fashion, accessories and lifestyle. Each will have its own customer experience while remaining connected to the master brand.</p></div>
+      <div class="editorial-panel"><div class="eyebrow">OUR PRINCIPLE</div><h4>Consistency without limitation.</h4><p>We will preserve the core GHEPARDO identity while allowing each venture to express its own character through coordinated design, service and products.</p></div>
+    </div>
+  </section>
+
+  <section id="insights">
+    <div class="section-title"><div class="section-kicker">Ideas worth sharing</div><h3>INSIGHTS</h3><p>Knowledge, perspectives and practical thinking across technology, business and brand building.</p></div>
+    <div class="mini-grid">
+      <div class="mini-card"><div class="eyebrow">DIGITAL</div><strong>Building smarter systems</strong><p>Ideas on digital workflows, automation and useful technology.</p></div>
+      <div class="mini-card"><div class="eyebrow">BUSINESS</div><strong>From idea to venture</strong><p>Lessons in product thinking, execution and sustainable growth.</p></div>
+      <div class="mini-card"><div class="eyebrow">BRANDING</div><strong>Creating lasting identity</strong><p>Perspectives on customer experience and connected brand worlds.</p></div>
+    </div>
+  </section>
+
+  <section id="contact">
     <div class="bottom-grid">
+      <div class="info-box"><h4>LET'S BUILD WHAT'S NEXT.</h4><p>For digital projects, product enquiries, collaborations and future business opportunities, connect with GHEPARDO.</p><a href="https://wa.me/201206692683" class="btn-gold" target="_blank" rel="noopener">Start a Conversation ↗</a></div>
       <div class="info-box">
-        <h4>MORE THAN A BRAND... A GROWTH PARTNER</h4>
-        <p>From industrial digital transformation and live factory monitoring systems to GHEPARDO Signature, Lifestyle, and Fragrance lines — every venture is engineered with precision.</p>
-        <a href="#products" class="btn-gold">Start Your Transformation →</a>
-      </div>
-      <div class="info-box" id="contact">
-        <h4>STAY CONNECTED</h4>
-        <p>Get early access to new GHEPARDO digital releases, executive templates, and exclusive offers.</p>
-        <form class="newsletter-form" onsubmit="subscribeUser(event)">
-          <input type="email" id="sub-email" placeholder="Your Email Address" required />
-          <button type="submit" class="btn-gold">Subscribe →</button>
-        </form>
-        <p id="sub-msg" style="color: var(--gold-light); font-size: 0.82rem; margin-top: 10px;"></p>
+        <h4>STAY CONNECTED</h4><p>Get early access to new GHEPARDO digital releases, insights and announcements.</p>
+        <form class="newsletter-form" onsubmit="subscribeUser(event)"><input type="email" id="sub-email" placeholder="Your Email Address" required /><button type="submit" class="btn-gold">Subscribe →</button></form>
+        <p id="sub-msg" style="color:var(--gold-light);font-size:.82rem;margin-top:10px;"></p>
       </div>
     </div>
   </section>
@@ -610,10 +648,7 @@
   </footer>
 
   <div class="mobile-nav">
-    <a href="#home" class="active"><span>🏠</span>Home</a>
-    <a href="#products"><span>📦</span>Products</a>
-    <a href="javascript:void(0)" onclick="openCart()"><span>🛒</span><span>Cart (<b id="mob-cart-count">0</b>)</span></a>
-    <a href="#contact"><span>✉️</span>Contact</a>
+    <a href="#home" class="active"><span>⌂</span>Home</a><a href="#solutions"><span>✦</span>World</a><a href="#products"><span>◇</span>Products</a><a href="#contact"><span>✉</span>Contact</a>
   </div>
 
   <div class="modal-overlay" id="checkout-modal">
