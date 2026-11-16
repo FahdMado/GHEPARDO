@@ -326,8 +326,14 @@
       const orderSnap = await get(ref(db, "orders/" + orderId));
       const order = orderSnap.val();
       if (!order) throw new Error("Order not found.");
-      if (order.status === "confirmed") throw new Error("This order is already confirmed.");
-      if (!order.downloadToken || !/^[a-f0-9]{48}$/.test(order.downloadToken)) throw new Error("This order has no valid customer download token. Ask the customer to place the order again after the checkout update.");
+      let downloadToken = order.downloadToken || "";
+      if (!downloadToken) {
+        const bytes = new Uint8Array(24);
+        crypto.getRandomValues(bytes);
+        downloadToken = Array.from(bytes, byte => byte.toString(16).padStart(2, "0")).join("");
+        await update(ref(db, "orders/" + orderId), { downloadToken });
+      }
+      if (!/^[a-f0-9]{48}$/.test(downloadToken)) throw new Error("This order has an invalid customer download token.");
       const items = Array.isArray(order.items) ? order.items : Object.values(order.items || {});
       const files = [];
       for (const item of items) {
@@ -345,13 +351,13 @@
       }
       if (!files.length) throw new Error("No downloadable files were found for this order.");
       const now = Date.now();
-      await set(ref(db, "downloads/" + order.downloadToken), {
+      await set(ref(db, "downloads/" + downloadToken), {
         files,
         createdAt: now,
         expiresAt: now + 30 * 24 * 60 * 60 * 1000
       });
       await update(ref(db, "orders/" + orderId), { status: "confirmed" });
-      const customerUrl = new URL("download.html?token=" + order.downloadToken, window.location.href).href;
+      const customerUrl = new URL("download.html?token=" + downloadToken, window.location.href).href;
       try { await navigator.clipboard.writeText(customerUrl); alert("Payment confirmed. Customer downloads are now unlocked for 30 days. The secure link was copied to your clipboard."); }
       catch (_) { alert("Payment confirmed. Customer downloads are now unlocked for 30 days. Customer link: " + customerUrl); }
     }
