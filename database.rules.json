@@ -112,6 +112,34 @@
         ".write": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
         ".validate": "newData.hasChildren(['files','createdAt','expiresAt'])"
       }
+    },
+    "customerOrders": {
+      "$token": {
+        ".read": "data.exists()",
+        ".write": "(!data.exists() && newData.exists()) || (auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42')",
+        ".validate": "newData.hasChildren(['items','totalEGP','status','createdAt','expiresAt','downloadToken'])",
+        "items": {
+          ".validate": "newData.hasChildren()"
+        },
+        "totalEGP": {
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 500000"
+        },
+        "status": {
+          ".validate": "newData.val() === 'pending' || (auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' && newData.val() === 'confirmed')"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 60000"
+        },
+        "expiresAt": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "downloadToken": {
+          ".validate": "newData.isString() && newData.val() === $token"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
     }
   }
 }
