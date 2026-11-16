@@ -670,7 +670,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD0S16iK5sxnnWb_s4_l41Op1fJE3fZNbI",
@@ -683,7 +683,7 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const functions = getFunctions(app, "europe-west1");\n    const createOrder = httpsCallable(functions, "createGhepardoOrder");\n    const subscribeNewsletter = httpsCallable(functions, "subscribeGhepardoNewsletter");
+    const db = getDatabase(app);
     const OWNER_WHATSAPP = "201206692683";
 
     const products = [
@@ -779,11 +779,14 @@
       const total = cart.reduce((sum, i) => sum + i.price, 0);
 
       try {
-        await createOrder({
-          customerName: name,
-          contact,
-          paymentReference: refNum,
-          items: cart.map(i => ({ id: i.id }))
+        await push(ref(db, "orders"), {
+          customerName: name.trim(),
+          contact: contact.trim(),
+          paymentReference: refNum.trim(),
+          items: cart.map(i => ({ title: i.title, price: i.price })),
+          totalEGP: total,
+          status: "pending",
+          timestampMs: Date.now()
         });
       } catch (err) {
         console.error("Order save failed:", err);
@@ -804,7 +807,7 @@
       e.preventDefault();
       const email = document.getElementById('sub-email').value;
       try {
-        await subscribeNewsletter({ email });
+        await push(ref(db, "subscribers"), { email: email.trim().toLowerCase(), timestampMs: Date.now() });
       } catch (err) {
         console.error("Newsletter subscription failed:", err);
         document.getElementById('sub-msg').innerText = 'Subscription failed. Please try again.';
