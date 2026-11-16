@@ -12,12 +12,10 @@
     :root {
       --bg-dark: #070606;
       --bg-card: #110e0d;
-      --bg-card-hover: #191412;
       --gold: #e5a93c;
       --gold-light: #f8cf7a;
       --gold-dark: #b37b1d;
-      --maroon: #6e141e;
-      --maroon-glow: rgba(110, 20, 30, 0.35);
+      --maroon-glow: rgba(110, 20, 30, 0.38);
       --text-main: #f5f2eb;
       --text-muted: #a69d8e;
       --border-gold: rgba(229, 169, 60, 0.25);
@@ -33,7 +31,7 @@
       background-image:
         radial-gradient(circle at 80% 15%, var(--maroon-glow), transparent 45%),
         radial-gradient(circle at 15% 40%, rgba(229, 169, 60, 0.08), transparent 40%);
-      padding-bottom: 75px;
+      padding-bottom: 78px;
     }
 
     /* Header */
@@ -41,39 +39,44 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(7, 6, 6, 0.88);
+      background: rgba(7, 6, 6, 0.92);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border-gold);
-      padding: 14px 5%;
+      padding: 12px 4%;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
     }
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       text-decoration: none;
+      min-width: 0;
     }
     .brand img {
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
       object-fit: contain;
       border-radius: 8px;
+      flex-shrink: 0;
     }
     .brand-text h1 {
       font-family: 'Cinzel', serif;
-      font-size: 1.35rem;
-      letter-spacing: 2px;
+      font-size: 1.2rem;
+      letter-spacing: 1.5px;
       background: linear-gradient(90deg, var(--gold-light), var(--gold));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .brand-text span {
       display: block;
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       color: var(--text-muted);
-      letter-spacing: 0.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     nav { display: flex; gap: 22px; align-items: center; }
     nav a {
@@ -85,19 +88,20 @@
     }
     nav a:hover, nav a.active { color: var(--gold); }
 
-    .header-actions { display: flex; align-items: center; gap: 12px; }
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
     .cart-btn {
-      background: rgba(229, 169, 60, 0.12);
+      background: rgba(229, 169, 60, 0.14);
       border: 1px solid var(--border-gold);
       color: var(--gold-light);
       padding: 8px 14px;
       border-radius: 50px;
       cursor: pointer;
-      font-weight: 600;
-      font-size: 0.85rem;
-      display: flex;
+      font-weight: 700;
+      font-size: 0.82rem;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
+      white-space: nowrap;
     }
     .btn-gold {
       background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
@@ -106,12 +110,14 @@
       padding: 10px 20px;
       border-radius: 50px;
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       cursor: pointer;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
+      white-space: nowrap;
       box-shadow: 0 4px 20px rgba(229, 169, 60, 0.28);
       transition: transform 0.2s, box-shadow 0.2s;
     }
@@ -119,7 +125,7 @@
 
     /* Hero Section */
     .hero {
-      padding: 60px 5% 40px;
+      padding: 55px 5% 40px;
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
       gap: 40px;
@@ -134,16 +140,16 @@
       background: rgba(110, 20, 30, 0.35);
       border: 1px solid rgba(229, 169, 60, 0.35);
       color: var(--gold-light);
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       font-weight: 600;
       letter-spacing: 1px;
       margin-bottom: 18px;
       text-transform: uppercase;
     }
     .hero h2 {
-      font-size: clamp(2.1rem, 4.5vw, 3.6rem);
+      font-size: clamp(2rem, 4.5vw, 3.5rem);
       font-weight: 800;
-      line-height: 1.12;
+      line-height: 1.14;
       margin-bottom: 18px;
       text-transform: uppercase;
     }
@@ -154,12 +160,12 @@
     }
     .hero p {
       color: var(--text-muted);
-      font-size: 1.05rem;
+      font-size: 1rem;
       line-height: 1.65;
       max-width: 560px;
-      margin-bottom: 28px;
+      margin-bottom: 26px;
     }
-    .hero-btns { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 36px; }
+    .hero-btns { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 34px; }
     .btn-outline {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border-gold);
@@ -167,12 +173,13 @@
       padding: 10px 20px;
       border-radius: 50px;
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       cursor: pointer;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      white-space: nowrap;
     }
     .trust-strip {
       display: grid;
@@ -192,7 +199,7 @@
     }
     .hero-emblem-card {
       width: 100%;
-      max-width: 420px;
+      max-width: 400px;
       aspect-ratio: 1 / 1;
       border-radius: 28px;
       background: radial-gradient(circle at center, rgba(110, 20, 30, 0.55), #0a0808 75%);
@@ -202,9 +209,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 30px;
-      position: relative;
-      overflow: hidden;
+      padding: 28px;
     }
     .hero-emblem-card img {
       width: 72%;
@@ -220,20 +225,17 @@
       font-size: 0.95rem;
     }
 
-    /* Section Containers */
-    section { padding: 55px 5%; max-width: 1320px; margin: 0 auto; }
-    .section-title {
-      text-align: center;
-      margin-bottom: 36px;
-    }
+    /* Sections */
+    section { padding: 50px 5%; max-width: 1320px; margin: 0 auto; }
+    .section-title { text-align: center; margin-bottom: 34px; }
     .section-title h3 {
       font-family: 'Cinzel', serif;
-      font-size: 1.75rem;
+      font-size: 1.7rem;
       letter-spacing: 2px;
       color: var(--gold-light);
       margin-bottom: 8px;
     }
-    .section-title p { color: var(--text-muted); font-size: 0.95rem; }
+    .section-title p { color: var(--text-muted); font-size: 0.92rem; }
 
     /* Pillars */
     .pillars-grid {
@@ -245,26 +247,25 @@
       background: linear-gradient(160deg, #161110, #0c0a09);
       border: 1px solid var(--border-gold);
       border-radius: 20px;
-      padding: 28px 22px;
+      padding: 26px 20px;
       text-align: center;
       transition: 0.3s;
     }
     .pillar-card:hover { transform: translateY(-5px); border-color: var(--gold); }
     .pillar-icon {
-      width: 54px;
-      height: 54px;
-      margin: 0 auto 16px;
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 14px;
       border-radius: 14px;
       background: rgba(229, 169, 60, 0.12);
       border: 1px solid var(--border-gold);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
-      color: var(--gold);
+      font-size: 1.4rem;
     }
-    .pillar-card h4 { font-size: 1.15rem; margin-bottom: 8px; color: var(--text-main); }
-    .pillar-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 14px; }
+    .pillar-card h4 { font-size: 1.12rem; margin-bottom: 8px; }
+    .pillar-card p { font-size: 0.86rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 14px; }
     .pillar-card a { color: var(--gold); text-decoration: none; font-size: 0.85rem; font-weight: 600; }
 
     /* Products Store */
@@ -272,17 +273,17 @@
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 28px;
+      gap: 8px;
+      margin-bottom: 26px;
     }
     .filter-btn {
       background: var(--bg-card);
       border: 1px solid rgba(255, 255, 255, 0.1);
       color: var(--text-muted);
-      padding: 8px 16px;
+      padding: 8px 15px;
       border-radius: 50px;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
     }
     .filter-btn.active {
@@ -293,8 +294,8 @@
 
     .products-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-      gap: 22px;
+      grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
+      gap: 20px;
     }
     .product-card {
       background: var(--bg-card);
@@ -307,7 +308,7 @@
     }
     .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6); }
     .product-banner {
-      height: 155px;
+      height: 145px;
       background: linear-gradient(135deg, #2a0a0e, #120d0c);
       display: flex;
       flex-direction: column;
@@ -315,8 +316,7 @@
       justify-content: center;
       position: relative;
       border-bottom: 1px solid var(--border-gold);
-      padding: 16px;
-      text-align: center;
+      padding: 14px;
     }
     .product-badge {
       position: absolute;
@@ -325,14 +325,571 @@
       background: rgba(229, 169, 60, 0.2);
       border: 1px solid var(--gold);
       color: var(--gold-light);
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       padding: 3px 10px;
       border-radius: 50px;
       font-weight: 700;
     }
-    .product-emoji { font-size: 2.4rem; margin-bottom: 6px; }
-    .product-cat { font-size: 0.75rem; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; }
-    .product-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+    .product-emoji { font-size: 2.3rem; margin-bottom: 6px; }
+    .product-cat { font-size: 0.72rem; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; }
+    .product-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
+    .product-body h4 { font-size: 1.08rem; margin-bottom: 8px; }
+    .product-body p { font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; flex: 1; }
+    .product-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .price { font-size: 1.18rem; font-weight: 800; color: var(--gold-light); }
+    .price small { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+
+    /* Bottom Grid */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+    }
+    .info-box {
+      background: linear-gradient(145deg, #171110, #0d0a09);
+      border: 1px solid var(--border-gold);
+      border-radius: 22px;
+      padding: 26px;
+    }
+    .info-box h4 { font-family: 'Cinzel', serif; color: var(--gold-light); font-size: 1.25rem; margin-bottom: 10px; }
+    .info-box p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; margin-bottom: 18px; }
+    .newsletter-form { display: flex; gap: 10px; flex-wrap: wrap; }
+    .newsletter-form input {
+      flex: 1;
+      min-width: 190px;
+      background: #080707;
+      border: 1px solid var(--border-gold);
+      color: var(--text-main);
+      padding: 11px 15px;
+      border-radius: 50px;
+      outline: none;
+    }
+
+    footer {
+      border-top: 1px solid var(--border-gold);
+      padding: 24px 5%;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    /* Mobile Bottom Bar */
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(12, 10, 9, 0.97);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border-gold);
+      z-index: 200;
+      padding: 9px 0;
+      justify-content: space-around;
+    }
+    .mobile-nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.72rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+    }
+    .mobile-nav a.active, .mobile-nav a:hover { color: var(--gold); }
+
+    /* Checkout Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(6px);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #14100f;
+      border: 1px solid var(--gold);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 22px;
+      position: relative;
+    }
+    .close-modal {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.6rem;
+      cursor: pointer;
+    }
+    .pay-method {
+      background: #0b0908;
+      border: 1px solid var(--border-gold);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .pay-method h5 { color: var(--gold-light); font-size: 0.92rem; margin-bottom: 6px; }
+    .qr-wrap {
+      text-align: center;
+      background: #fff;
+      padding: 10px;
+      border-radius: 12px;
+      max-width: 185px;
+      margin: 10px auto;
+    }
+    .qr-wrap img { width: 100%; height: auto; display: block; border-radius: 6px; }
+    .copy-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #181312;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #fff;
+      margin-top: 8px;
+      gap: 8px;
+    }
+    .copy-btn {
+      background: var(--gold);
+      color: #000;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.74rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; }
+    .form-group input, .form-group select {
+      width: 100%;
+      background: #090707;
+      border: 1px solid var(--border-gold);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    @media (max-width: 860px) {
+      nav, .desktop-only { display: none !important; }
+      .hero { grid-template-columns: 1fr; text-align: center; padding-top: 28px; }
+      .hero p { margin: 0 auto 22px; }
+      .hero-btns { justify-content: center; }
+      .trust-strip { grid-template-columns: repeat(2, 1fr); }
+      .bottom-grid { grid-template-columns: 1fr; }
+      .mobile-nav { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <a href="#" class="brand">
+      <img src="Logo.png" alt="GHEPARDO Logo" />
+      <div class="brand-text">
+        <h1>GHEPARDO</h1>
+        <span>Build to Evolve. Designed to Scale.</span>
+      </div>
+    </a>
+    <nav>
+      <a href="#home" class="active">Home</a>
+      <a href="#pillars">Solutions</a>
+      <a href="#products">Products</a>
+      <a href="#ventures">Ventures</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <button class="cart-btn" onclick="openCart()">🛒 Cart (<span id="cart-count">0</span>)</button>
+      <a href="#products" class="btn-gold desktop-only">Get Started →</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+    <div>
+      <div class="hero-badge">GHEPARDO DIGITAL ECOSYSTEM</div>
+      <h2>BUILD DIGITAL ASSETS.<br><span>CREATE LASTING VALUE.</span></h2>
+      <p>GHEPARDO is more than a brand — it’s a vision to build a scalable digital ecosystem of smart dashboards, Notion systems, and commercial ventures that grow with you.</p>
+      <div class="hero-btns">
+        <a href="#products" class="btn-gold">Explore Our Products →</a>
+        <a href="#pillars" class="btn-outline">▶ Discover Ecosystem</a>
+      </div>
+      <div class="trust-strip">
+        <div class="trust-item"><strong>Global Vision</strong>Worldwide Delivery</div>
+        <div class="trust-item"><strong>Innovation</strong>Smart Automation</div>
+        <div class="trust-item"><strong>Partnership</strong>Growth Focused</div>
+        <div class="trust-item"><strong>Sustainability</strong>Built to Scale</div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-emblem-card">
+        <img src="Logo.png" alt="GHEPARDO Cheetah Emblem" />
+        <div class="hero-emblem-tag">GHEPARDO</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What We Build -->
+  <section id="pillars">
+    <div class="section-title">
+      <h3>WHAT WE BUILD</h3>
+      <p>Three integrated pillars powering modern professionals and businesses</p>
+    </div>
+    <div class="pillars-grid">
+      <div class="pillar-card">
+        <div class="pillar-icon">💻</div>
+        <h4>Digital Development</h4>
+        <p>Live operational dashboards, Firebase systems, and automated Excel/VBA workflows tailored for real-time tracking.</p>
+        <a href="#products">Explore Systems →</a>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon">📦</div>
+        <h4>Digital Products</h4>
+        <p>Ready-to-use Notion workspaces, executive dashboards, and financial calculators engineered for instant productivity.</p>
+        <a href="#products">Browse Store →</a>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-icon">🚀</div>
+        <h4>Digital Ventures</h4>
+        <p>Scalable lifestyle, fragrance, and commercial brand architectures designed for long-term market leadership.</p>
+        <a href="#ventures">View Ventures →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products Store -->
+  <section id="products">
+    <div class="section-title">
+      <h3>FEATURED DIGITAL PRODUCTS</h3>
+      <p>Instant digital delivery — Select your asset and complete payment seamlessly</p>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterProducts('all', this)">All Assets</button>
+      <button class="filter-btn" onclick="filterProducts('dashboard', this)">Business Dashboards</button>
+      <button class="filter-btn" onclick="filterProducts('notion', this)">Notion Templates</button>
+      <button class="filter-btn" onclick="filterProducts('tools', this)">Productivity Tools</button>
+    </div>
+
+    <div class="products-grid" id="products-grid"></div>
+  </section>
+
+  <!-- Ventures & Stay Connected -->
+  <section id="ventures">
+    <div class="bottom-grid">
+      <div class="info-box">
+        <h4>MORE THAN A BRAND... A GROWTH PARTNER</h4>
+        <p>From industrial digital transformation and live factory monitoring systems to GHEPARDO Signature, Lifestyle, and Fragrance lines — every venture is engineered with precision.</p>
+        <a href="#products" class="btn-gold">Start Your Transformation →</a>
+      </div>
+      <div class="info-box" id="contact">
+        <h4>STAY CONNECTED</h4>
+        <p>Get early access to new GHEPARDO digital releases, executive templates, and exclusive offers.</p>
+        <form class="newsletter-form" onsubmit="subscribeUser(event)">
+          <input type="email" id="sub-email" placeholder="Your Email Address" required />
+          <button type="submit" class="btn-gold">Subscribe →</button>
+        </form>
+        <p id="sub-msg" style="color: var(--gold-light); font-size: 0.82rem; margin-top: 10px;"></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 GHEPARDO Ecosystem. All Rights Reserved. | Build to Evolve. Designed to Scale.</p>
+  </footer>
+
+  <!-- Mobile Bottom Navigation -->
+  <div class="mobile-nav">
+    <a href="#home" class="active"><span>🏠</span>Home</a>
+    <a href="#products"><span>📦</span>Products</a>
+    <a href="javascript:void(0)" onclick="openCart()"><span>🛒</span><span>Cart (<b id="mob-cart-count">0</b>)</span></a>
+    <a href="#contact"><span>✉️</span>Contact</a>
+  </div>
+
+  <!-- Checkout & Payment Modal -->
+  <div class="modal-overlay" id="checkout-modal">
+    <div class="modal-box">
+      <button class="close-modal" onclick="closeCart()">×</button>
+      <h3 style="font-family:'Cinzel',serif; color:var(--gold-light); margin-bottom:6px;">GHEPARDO CHECKOUT</h3>
+      <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">Choose your payment method & confirm your order</p>
+
+      <div id="cart-items" style="margin-bottom:14px; border-bottom:1px solid var(--border-gold); padding-bottom:10px;"></div>
+
+      <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.1rem; margin-bottom:14px;">
+        <span>Total Amount:</span>
+        <span style="color:var(--gold-light);" id="cart-total">0 EGP</span>
+      </div>
+
+      <!-- Option 1: InstaPay -->
+      <div class="pay-method">
+        <h5>1. Pay via InstaPay (Instant Link or QR)</h5>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:8px;">Click the button below to pay directly or scan the QR code:</p>
+        <a href="https://ipn.eg/S/fahd_mado/instapay/3x0iDZ" target="_blank" class="btn-gold" style="width:100%; font-size:0.82rem; padding:9px;">⚡ Pay Now via InstaPay Link →</a>
+        <div class="qr-wrap">
+          <img src="QR%20Code%20Instapay.jpg" alt="InstaPay QR Code" />
+        </div>
+        <div class="copy-row">
+          <span id="ipa-addr">fahd_mado@instapay</span>
+          <button type="button" class="copy-btn" onclick="copyText('ipa-addr')">Copy IPA</button>
+        </div>
+      </div>
+
+      <!-- Option 2: Orange Cash -->
+      <div class="pay-method">
+        <h5>2. Pay via Orange Cash Wallet</h5>
+        <div class="copy-row">
+          <span id="orange-num">01206692683</span>
+          <button type="button" class="copy-btn" onclick="copyText('orange-num')">Copy Number</button>
+        </div>
+      </div>
+
+      <form onsubmit="submitOrder(event)">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="cust-name" placeholder="Enter your name" required />
+        </div>
+        <div class="form-group">
+          <label>WhatsApp Number or Email (For Instant Delivery)</label>
+          <input type="text" id="cust-contact" placeholder="e.g. 012xxxxxxxx or email@domain.com" required />
+        </div>
+        <div class="form-group">
+          <label>Payment Method & Reference / Last 4 Digits</label>
+          <input type="text" id="cust-ref" placeholder="e.g. InstaPay Ref #4821 or Orange Cash" required />
+        </div>
+        <button type="submit" id="submit-order-btn" class="btn-gold" style="width:100%;">Confirm Order & Send via WhatsApp →</button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD0S16iK5sxnnWb_s4_l41Op1fJE3fZNbI",
+      authDomain: "ghepardo-1.firebaseapp.com",
+      databaseURL: "https://ghepardo-1-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "ghepardo-1",
+      storageBucket: "ghepardo-1.firebasestorage.app",
+      messagingSenderId: "814705402338",
+      appId: "1:814705402338:web:a3e7541baf91e6d95099bb",
+      measurementId: "G-37X69KDWZR"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const OWNER_WHATSAPP = "201206692683";
+
+    const products = [
+      {
+        id: 1,
+        title: "Factory Live Production Dashboard",
+        category: "dashboard",
+        badge: "BEST SELLER",
+        emoji: "📊",
+        desc: "Real-time KPI & production tracking web dashboard powered by Firebase & GitHub Pages.",
+        price: 750
+      },
+      {
+        id: 2,
+        title: "GHEPARDO Executive Notion OS",
+        category: "notion",
+        badge: "NEW",
+        emoji: "🗂️",
+        desc: "All-in-one Notion command center for projects, SOPs, finance tracking, and daily execution.",
+        price: 350
+      },
+      {
+        id: 3,
+        title: "Smart Inventory & Kanban Excel System",
+        category: "tools",
+        badge: "PRO",
+        emoji: "⚡",
+        desc: "Automated Excel + VBA inventory, supermarket Kanban & cost control workbook.",
+        price: 490
+      },
+      {
+        id: 4,
+        title: "Personal Wealth & Investment Tracker",
+        category: "tools",
+        badge: "POPULAR",
+        emoji: "💎",
+        desc: "Complete financial calculator & Thndr/gold portfolio tracker tailored for smart investors.",
+        price: 290
+      }
+    ];
+
+    let cart = [];
+
+    window.renderProducts = function(filter = 'all') {
+      const grid = document.getElementById('products-grid');
+      grid.innerHTML = '';
+      const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+
+      filtered.forEach(p => {
+        grid.innerHTML += `
+          <div class="product-card">
+            <div class="product-banner">
+              <span class="product-badge">${p.badge}</span>
+              <div class="product-emoji">${p.emoji}</div>
+              <div class="product-cat">${p.category}</div>
+            </div>
+            <div class="product-body">
+              <h4>${p.title}</h4>
+              <p>${p.desc}</p>
+              <div class="product-footer">
+                <div class="price">${p.price} <small>EGP</small></div>
+                <button class="btn-gold" style="padding:8px 14px; font-size:0.8rem;" onclick="addToCart(${p.id})">Buy Now +</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    };
+
+    window.filterProducts = function(cat, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderProducts(cat);
+    };
+
+    window.addToCart = function(id) {
+      const item = products.find(p => p.id === id);
+      cart.push(item);
+      updateCartUI();
+      openCart();
+    };
+
+    window.removeFromCart = function(index) {
+      cart.splice(index, 1);
+      updateCartUI();
+    };
+
+    function updateCartUI() {
+      document.getElementById('cart-count').innerText = cart.length;
+      document.getElementById('mob-cart-count').innerText = cart.length;
+
+      const list = document.getElementById('cart-items');
+      const totalEl = document.getElementById('cart-total');
+
+      if (cart.length === 0) {
+        list.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">Your cart is empty.</p>';
+        totalEl.innerText = '0 EGP';
+        return;
+      }
+
+      let total = 0;
+      list.innerHTML = '';
+      cart.forEach((item, idx) => {
+        total += item.price;
+        list.innerHTML += `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:0.86rem;">
+            <span>${item.title}</span>
+            <div style="white-space:nowrap;">
+              <strong style="color:var(--gold-light); margin-right:8px;">${item.price} EGP</strong>
+              <button onclick="removeFromCart(${idx})" style="background:none; border:none; color:#ff5e5e; cursor:pointer;">✕</button>
+            </div>
+          </div>
+        `;
+      });
+      totalEl.innerText = total + ' EGP';
+    }
+
+    window.openCart = function() {
+      updateCartUI();
+      document.getElementById('checkout-modal').classList.add('open');
+    };
+
+    window.closeCart = function() {
+      document.getElementById('checkout-modal').classList.remove('open');
+    };
+
+    window.copyText = function(elId) {
+      const txt = document.getElementById(elId).innerText;
+      navigator.clipboard.writeText(txt);
+      alert('Copied: ' + txt);
+    };
+
+    window.submitOrder = async function(e) {
+      e.preventDefault();
+      if (cart.length === 0) { alert('Please add at least one product first.'); return; }
+
+      const btn = document.getElementById('submit-order-btn');
+      btn.innerText = 'Saving Order...';
+      btn.disabled = true;
+
+      const name = document.getElementById('cust-name').value;
+      const contact = document.getElementById('cust-contact').value;
+      const ref = document.getElementById('cust-ref').value;
+      const total = cart.reduce((sum, i) => sum + i.price, 0);
+
+      try {
+        await addDoc(collection(db, "orders"), {
+          customerName: name,
+          contact: contact,
+          paymentReference: ref,
+          items: cart.map(i => ({ title: i.title, price: i.price })),
+          totalEGP: total,
+          status: "pending",
+          createdAt: serverTimestamp()
+        });
+      } catch (err) {
+        console.warn("Firestore log skipped:", err);
+      }
+
+      const itemsText = cart.map(i => `- ${i.title} (${i.price} EGP)`).join('%0A');
+      const msg = `*NEW GHEPARDO ORDER*%0A*Name:* ${name}%0A*Delivery Contact:* ${contact}%0A*Payment Ref:* ${ref}%0A*Items:*%0A${itemsText}%0A*Total:* ${total} EGP`;
+
+      btn.innerText = 'Confirm Order & Send via WhatsApp →';
+      btn.disabled = false;
+      window.open(`https://wa.me/${OWNER_WHATSAPP}?text=${msg}`, '_blank');
+    };
+
+    window.subscribeUser = async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('sub-email').value;
+      try {
+        await addDoc(collection(db, "subscribers"), {
+          email: email,
+          subscribedAt: serverTimestamp()
+        });
+      } catch (err) {
+        console.warn("Subscriber log skipped:", err);
+      }
+      document.getElementById('sub-msg').innerText = '✓ Welcome to GHEPARDO! Subscribed: ' + email;
+      document.getElementById('sub-email').value = '';
+    };
+
+    renderProducts();
+  </script>
+</body>
+</html>
+flex; flex-direction: column; }
     .product-body h4 { font-size: 1.1rem; margin-bottom: 8px; }
     .product-body p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; flex: 1; }
     .product-footer {
