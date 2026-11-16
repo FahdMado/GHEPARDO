@@ -313,7 +313,28 @@
       }catch(error){msg.textContent=error.message||"Could not save product. Check Firebase rules.";}finally{button.disabled=false;}
     });
     async function downloadProductFile(productId){const snap=await get(ref(db,"productFiles/"+productId)),file=snap.val();if(!file)throw Error("No digital file has been uploaded.");if(file.fileData){const link=document.createElement("a");link.href=file.fileData;link.download=file.fileName||"GHEPARDO-product";document.body.appendChild(link);link.click();link.remove();}else if(file.downloadUrl){window.open(file.downloadUrl,"_blank","noopener");}else{throw Error("No file is available.");}}
-    async function prepareDelivery(orderId){const snap=await get(ref(db,"orders/"+orderId)),order=snap.val();if(!order)return alert("Order not found.");if(order.status!=="confirmed")return alert("Verify payment and mark the order Confirmed before preparing delivery.");const items=Array.isArray(order.items)?order.items:Object.values(order.items||{}),lines=[];for(const item of items){if(!item.productId){lines.push(item.title+": contact GHEPARDO for delivery.");continue;}const fileSnap=await get(ref(db,"productFiles/"+item.productId)),file=fileSnap.val();lines.push(item.title+(file?.downloadUrl?": "+file.downloadUrl:": download link not configured."));}const message="Hello "+(order.customerName||"there")+", your GHEPARDO order is confirmed.\n\n"+lines.join("\n")+"\n\nThank you for choosing GHEPARDO.";const phone=String(order.contact||"").replace(/[^0-9]/g,"");if(phone.length>=10){const waPhone=phone.startsWith("0")?"2"+phone:phone;window.open("https://wa.me/"+waPhone+"?text="+encodeURIComponent(message),"_blank");}else{await navigator.clipboard.writeText(message);alert("Delivery message copied. Customer contact is not a phone number.");}}
+    async function prepareDelivery(orderId){
+      const popup=window.open("about:blank","_blank");
+      try{
+        const snap=await get(ref(db,"orders/"+orderId)),order=snap.val();
+        if(!order)throw Error("Order not found.");
+        if(order.status!=="confirmed")throw Error("Verify payment and mark the order Confirmed before preparing delivery.");
+        const items=Array.isArray(order.items)?order.items:Object.values(order.items||{}),lines=[];
+        for(const item of items){
+          if(!item.productId){lines.push(item.title+": file not linked to this order.");continue;}
+          const fileSnap=await get(ref(db,"productFiles/"+item.productId)),file=fileSnap.val();
+          if(file?.fileData){
+            const link=document.createElement("a");link.href=file.fileData;link.download=file.fileName||"GHEPARDO-product";document.body.appendChild(link);link.click();link.remove();
+            lines.push(item.title+": downloaded to your device; attach the file to this message.");
+          }else if(file?.downloadUrl){lines.push(item.title+": "+file.downloadUrl);}
+          else{lines.push(item.title+": delivery file not configured.");}
+        }
+        const message="Hello "+(order.customerName||"there")+", your GHEPARDO order is confirmed.\n\n"+lines.join("\n")+"\n\nThank you for choosing GHEPARDO.";
+        const phone=String(order.contact||"").replace(/[^0-9]/g,"");
+        if(phone.length>=10){const waPhone=phone.startsWith("0")?"2"+phone:phone;if(popup)popup.location.href="https://wa.me/"+waPhone+"?text="+encodeURIComponent(message);}
+        else{if(popup)popup.close();await navigator.clipboard.writeText(message);alert("Delivery message copied. Attach the downloaded product files to your customer message.");}
+      }catch(error){if(popup)popup.close();alert(error.message||"Could not prepare delivery.");}
+    }
 
     onAuthStateChanged(auth, async user => {
       if (!user) {
