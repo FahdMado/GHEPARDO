@@ -556,7 +556,7 @@
     </a>
     <nav aria-label="Main navigation"><a href="index.html" data-page-link="home" aria-current="page">Home</a><a href="about.html" data-page-link="about">About</a><a href="solutions.html" data-page-link="solutions">Solutions</a><a href="products.html" data-page-link="products">Products</a><a href="portfolio.html" data-page-link="portfolio">Portfolio</a><a href="ventures.html" data-page-link="ventures">Ventures</a><a href="insights.html" data-page-link="insights">Insights</a><a href="contact.html" data-page-link="contact">Contact</a></nav>
     <div class="header-actions">
-      <button class="cart-btn" onclick="openCart()">🛒 Cart (<span id="cart-count">0</span>)</button>
+      <a href="my-orders.html" class="btn-outline" style="padding:9px 13px;font-size:.78rem">My Orders</a><button class="cart-btn" onclick="openCart()">🛒 Cart (<span id="cart-count">0</span>)</button>
       <a href="products.html" class="btn-gold desktop-only">Get Started →</a>
     </div>
   </header>
@@ -722,11 +722,12 @@
       </form>
       <div id="checkout-result" style="display:none"></div>
     </div>
-  </div>
+  <a href="my-orders.html" data-page-link="my-orders" aria-label="My Orders"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v17H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>My Orders</span></a>
+</div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getDatabase, ref, push, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD0S16iK5sxnnWb_s4_l41Op1fJE3fZNbI",
@@ -840,17 +841,24 @@ function makeDownloadToken() {
       const downloadToken = makeDownloadToken();
       const orderRef = push(ref(db, "orders"));
 
+      const orderItems = cart.map(i => ({ productId: i.id, title: i.title, price: i.price }));
+      const createdAt = Date.now();
       try {
-        await set(orderRef, {
-          customerName: name,
-          contact,
-          paymentReference: refNum,
-          items: cart.map(i => ({ productId: i.id, title: i.title, price: i.price })),
-          totalEGP: total,
-          status: "pending",
-          downloadToken,
-          timestampMs: Date.now()
+        await update(ref(db), {
+          ["orders/" + orderRef.key]: {
+            customerName: name, contact, paymentReference: refNum,
+            items: orderItems, totalEGP: total, status: "pending",
+            downloadToken, timestampMs: createdAt
+          },
+          ["customerOrders/" + downloadToken]: {
+            items: orderItems.map(i => ({ title: i.title, price: i.price })),
+            totalEGP: total, status: "pending", createdAt,
+            expiresAt: 0, downloadToken
+          }
         });
+        const savedTokens = JSON.parse(localStorage.getItem("ghepardo_order_tokens") || "[]");
+        if (!savedTokens.includes(downloadToken)) savedTokens.push(downloadToken);
+        localStorage.setItem("ghepardo_order_tokens", JSON.stringify(savedTokens));
       } catch (err) {
         console.error("Order save failed:", err);
         btn.innerText = 'Confirm Order & Send via WhatsApp →';
