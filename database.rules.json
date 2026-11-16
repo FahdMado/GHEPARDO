@@ -1,0 +1,63 @@
+{
+  "rules": {
+    "orders": {
+      ".read": "auth != null && auth.token.admin === true",
+      "$orderId": {
+        ".write": "(auth != null && auth.token.admin === true) || (!data.exists() && newData.exists())",
+        ".validate": "newData.hasChildren(['customerName','contact','paymentReference','items','totalEGP','status','timestampMs'])",
+        "customerName": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 100"
+        },
+        "contact": {
+          ".validate": "newData.isString() && newData.val().length > 3 && newData.val().length <= 120"
+        },
+        "paymentReference": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120"
+        },
+        "items": {
+          ".validate": "newData.hasChildren()",
+          "$itemId": {
+            ".validate": "newData.hasChildren(['title','price'])",
+            "title": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 160"
+            },
+            "price": {
+              ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 100000"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "totalEGP": {
+          ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 500000"
+        },
+        "status": {
+          ".validate": "newData.val() === 'pending' || (auth != null && auth.token.admin === true)"
+        },
+        "timestampMs": {
+          ".validate": "newData.isNumber() && newData.val() <= now + 60000 && newData.val() >= now - 86400000"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "subscribers": {
+      ".read": "auth != null && auth.token.admin === true",
+      "$subscriberId": {
+        ".write": "(auth != null && auth.token.admin === true) || (!data.exists() && newData.exists())",
+        ".validate": "newData.hasChildren(['email','timestampMs'])",
+        "email": {
+          ".validate": "newData.isString() && newData.val().length >= 5 && newData.val().length <= 254 && newData.val().matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}$/)"
+        },
+        "timestampMs": {
+          ".validate": "newData.isNumber() && newData.val() <= now + 60000 && newData.val() >= now - 86400000"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    }
+  }
+}
