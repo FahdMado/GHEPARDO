@@ -1069,12 +1069,12 @@
       try {
         const snap = await get(ref(db, "coupons/" + code));
         const promo = snap.val();
-        if (!promo || promo.active === false) {
+        if (!promo || promo.active === false || !Number.isFinite(Number(promo.discount)) || Number(promo.discount) < 1 || Number(promo.discount) > 50) {
           appliedPromo = null;
           msg.style.color = "#ff6b6b";
           msg.textContent = "✕ Invalid or inactive promo code.";
         } else {
-          appliedPromo = { code: code, discount: Number(promo.discount || 0) };
+          appliedPromo = { code: code, discount: Math.min(50, Number(promo.discount || 0)) };
           msg.style.color = "#2ecc71";
           msg.textContent = `✓ Promo ${code} applied: ${appliedPromo.discount}% OFF!`;
         }
