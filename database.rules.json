@@ -58,6 +58,15 @@
         },
         "downloadToken": {
           ".validate": "newData.isString() && newData.val().matches(/^[a-f0-9]{48}$/)"
+        },
+        "promoMarketer": {
+          ".validate": "newData.isString() && newData.val().length <= 80"
+        },
+        "promoCommissionRate": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+        },
+        "promoCommissionAmount": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 500000"
         }
       }
     },
@@ -195,6 +204,12 @@
         },
         "$other": {
           ".validate": false
+        },
+        "marketerName": {
+          ".validate": "newData.isString() && newData.val().length <= 80"
+        },
+        "commissionRate": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
         }
       }
     },
