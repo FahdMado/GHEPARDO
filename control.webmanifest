@@ -1,8 +1,8 @@
 {
-  "id": "/GHEPARDO/control-app",
-  "name": "GHEPARDO CONTROL",
-  "short_name": "G CONTROL",
-  "description": "Private GHEPARDO management and operations app",
+  "id": "/GHEPARDO/admin-pwa-v2",
+  "name": "GHEPARDO ADMIN",
+  "short_name": "ADMIN",
+  "description": "GHEPARDO private administration and operations",
   "start_url": "/GHEPARDO/admin.html?source=pwa",
   "scope": "/GHEPARDO/",
   "display": "standalone",
