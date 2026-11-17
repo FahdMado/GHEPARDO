@@ -1,8 +1,8 @@
 {
-  "id": "/GHEPARDO/store-app",
-  "name": "GHEPARDO STORE",
-  "short_name": "G STORE",
-  "description": "GHEPARDO digital products and customer store",
+  "id": "/GHEPARDO/store-pwa-v2",
+  "name": "GHEPARDO",
+  "short_name": "GHEPARDO",
+  "description": "GHEPARDO customer store and digital products",
   "start_url": "/GHEPARDO/products.html?source=pwa",
   "scope": "/GHEPARDO/",
   "display": "standalone",
