@@ -448,9 +448,6 @@
           </div>
           <div class="admin-grid" style="margin-top:12px;"><div class="order-card"><span class="muted">Confirmed Today</span><strong id="stat-rev-today" style="display:block;color:var(--gold-light);font-size:1.15rem;margin-top:5px;">0 EGP</strong></div><div class="order-card"><span class="muted">Confirmed • 7 Days</span><strong id="stat-rev-7d" style="display:block;color:var(--gold-light);font-size:1.15rem;margin-top:5px;">0 EGP</strong></div></div>
           <div class="order-card" style="margin-top:10px;"><span class="muted">Pending orders</span><strong id="stat-pending-orders" style="display:block;color:var(--gold-light);font-size:1.15rem;margin-top:5px;">0</strong></div>
-          <div class="order-card" style="display:none;">
-          </div>
-
           <!-- Multi-Promo Code Manager -->
           <div class="order-card" style="margin-top:14px;">
             <h4 style="font-family:'Cinzel',serif; color:var(--gold-light); font-size:0.9rem; margin-bottom:10px;">🎟️ PROMO CODES MANAGER</h4>
@@ -870,7 +867,7 @@
 
       if (!rows.length) { list.innerHTML = '<div class="order-card muted">' + (allRows.length ? "No products match your search or filter." : "No products yet. Add your first product above.") + '</div>'; return; }
       list.innerHTML = rows.map(([id, p]) =>
-        '<div class="product-admin-card"><img src="' + escapeHTML(p.imageData || p.imageUrl || "Logo.png") + '" alt=""><div><div class="order-top"><strong>' + escapeHTML(p.title) + '</strong><span class="badge ' + (p.status === "published" ? "confirmed" : "pending") + '">' + escapeHTML(p.status || "draft") + '</span></div><div class="muted">' + escapeHTML(p.category) + ' · ' + Number(p.price).toLocaleString() + ' EGP · Stock: ' + Number(p.stock || 0) + '</div><div class="actions"><button class="btn" data-edit-product="' + escapeHTML(id) + '">Edit</button><button class="btn-outline" data-download-product="' + escapeHTML(id) + '">File</button><button class="btn-outline danger" data-delete-product="' + escapeHTML(id) + '">Delete</button></div></div></div>'
+        '<div class="product-admin-card"><img src="' + escapeHTML(p.imageData || p.imageUrl || "Logo.png") + '" alt=""><div><div class="order-top"><strong>' + escapeHTML(p.title) + '</strong><span class="badge ' + (p.status === "published" ? "confirmed" : "pending") + '">' + escapeHTML(p.status || "draft") + '</span></div><div class="muted">' + escapeHTML(p.category) + ' · ' + Number(p.price).toLocaleString() + ' EGP · Stock: ' + Number(p.stock || 0) + '</div><div class="actions"><button class="btn" data-edit-product="' + escapeHTML(id) + '">Edit</button><button class="btn-outline" data-download-product="' + escapeHTML(id) + '">File</button><button class="btn-outline" data-duplicate-product="' + escapeHTML(id) + '">Duplicate</button><a class="btn-outline" href="products.html#products" target="_blank" rel="noopener">Store preview</a><button class="btn-outline danger" data-delete-product="' + escapeHTML(id) + '">Delete</button></div></div></div>'
       ).join("");
     }
 
@@ -891,7 +888,15 @@
       const editId = event.target.closest("[data-edit-product]")?.dataset.editProduct;
       const deleteId = event.target.closest("[data-delete-product]")?.dataset.deleteProduct;
       const downloadId = event.target.closest("[data-download-product]")?.dataset.downloadProduct;
+      const duplicateId = event.target.closest("[data-duplicate-product]")?.dataset.duplicateProduct;
       if (downloadId) { try { await downloadProductFile(downloadId); } catch (error) { alert(error.message || "Could not download file."); } }
+      if (duplicateId) {
+        const source = cachedProducts[duplicateId];
+        if (!source) return;
+        const copyId = push(ref(db, "products")).key;
+        await set(ref(db, "products/" + copyId), {...source, title: String(source.title || "Product") + " (Copy)", status: "draft", badge: "DRAFT COPY", updatedAt: Date.now()});
+        document.getElementById("product-form-msg").textContent = "Draft copy created. Upload its own delivery file before publishing.";
+      }
       if (editId) {
         const p = cachedProducts[editId]; if (!p) return;
         document.getElementById("product-id").value = editId;
@@ -952,6 +957,7 @@
         };
         await set(ref(db, "products/" + id), product);
         const digitalFile = document.getElementById("product-download-file").files[0];
+        if (digitalFile && digitalFile.size > 3 * 1024 * 1024) throw Error("Digital file must be <= 3 MB.");
         const downloadUrl = document.getElementById("product-download-url").value.trim();
         if (digitalFile) {
           if (digitalFile.size > 3 * 1024 * 1024) throw Error("Digital file must be <= 3 MB.");
