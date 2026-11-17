@@ -740,7 +740,7 @@
 
           return `<div class="order-card">
             <div class="order-top"><strong>${escapeHTML(order.customerName || "Customer")}</strong><span class="badge ${status}">${escapeHTML(order.status || "pending")}</span></div>
-            <div class="order-meta">📞 Contact: <b>${escapeHTML(order.contact)}</b><br>💳 Ref: <b>${escapeHTML(order.paymentReference)}</b>${promoTag}<br>💰 Total: <b style="color:var(--gold-light);">${escapeHTML(order.totalEGP)} EGP</b></div>
+            <div class="order-meta">📞 Contact: <b>${escapeHTML(order.contact)}</b><br>💳 Method: <b>${escapeHTML(order.paymentMethod || "Not recorded")}</b><br>🔎 Ref: <b>${escapeHTML(order.paymentReference)}</b>${promoTag}<br>💰 Total: <b style="color:var(--gold-light);">${escapeHTML(order.totalEGP)} EGP</b></div>
             <div class="order-items">${itemHtml}</div>
             <div class="actions">${actionBtns}<button class="btn-outline danger" data-delete="${escapeHTML(order.id)}">Delete</button></div>
           </div>`;
@@ -831,7 +831,10 @@
         if (deleteId && confirm("Delete this order record?")) {
           const orderSnap = await get(ref(db, "orders/" + deleteId));
           const oldOrder = orderSnap.val();
-          if (oldOrder?.downloadToken) await remove(ref(db, "downloads/" + oldOrder.downloadToken));
+          if (oldOrder?.downloadToken) {
+            await remove(ref(db, "downloads/" + oldOrder.downloadToken));
+            await remove(ref(db, "customerOrders/" + oldOrder.downloadToken));
+          }
           await remove(ref(db, "orders/" + deleteId));
         }
         if (copyToken) {
