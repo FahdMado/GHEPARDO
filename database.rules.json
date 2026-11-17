@@ -1,7 +1,7 @@
 {
   "rules": {
     "orders": {
-      ".read": "(auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('orders').child('view').val() === true)",
+      ".read": "(auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('orders').child('view').val() === true || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('dashboard').child('view').val() === true || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('finance').child('view').val() === true)",
       "$orderId": {
         ".write": "(!data.exists() && newData.exists()) || (auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('orders').child('edit').val() === true)",
         ".validate": "newData.hasChildren(['customerName','contact','paymentReference','items','totalEGP','status','timestampMs'])",
@@ -121,7 +121,7 @@
       }
     },
     "productFiles": {
-      ".read": "(auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('products').child('files').val() === true)",
+      ".read": "(auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('products').child('files').val() === true || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('orders').child('delivery').val() === true)",
       ".write": "(auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('products').child('files').val() === true)"
     },
     "downloads": {
@@ -199,8 +199,9 @@
       }
     },
     "staff": {
-      ".read": "auth != null && (auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth.uid === $uid)",
+      ".read": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
       "$uid": {
+        ".read": "auth != null && (auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth.uid === $uid)",
         ".write": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'"
       }
     },
