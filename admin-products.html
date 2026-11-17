@@ -345,7 +345,7 @@
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
           <button id="admin-logout" class="btn-outline danger" type="button" style="display:none;">Sign out</button>
-          <button id="enable-notifications" class="btn-outline" type="button">🔔 Enable alerts</button><a href="index.html" class="btn-outline">← Live Store</a>
+          <button id="enable-notifications" class="btn-outline" type="button">🔔 Enable alerts</button><a id="team-nav-top" href="admin-team.html" class="btn-outline" style="display:none;">👥 Team</a><a href="index.html" class="btn-outline">← Live Store</a>
         </div>
       </div>
 
@@ -1148,6 +1148,7 @@
 
     const CURRENT_PAGE_PERMISSION = "products";
     const teamNavLink = document.getElementById("team-nav-link");
+    const teamNavTop = document.getElementById("team-nav-top");
     async function resolveStaffAccess(user) {
       if (user.uid === OWNER_UID) return { owner: true, profile: { displayName: "GHEPARDO Owner", active: true, permissions: {} } };
       const profileSnap = await get(ref(db, "staff/" + user.uid));
@@ -1157,6 +1158,7 @@
     }
     function applyTeamNavigation(access) {
       if (teamNavLink) teamNavLink.style.display = access.owner ? "flex" : "none";
+      if (teamNavTop) teamNavTop.style.display = access.owner ? "inline-flex" : "none";
       const links = { "admin.html": "dashboard", "admin-products.html": "products", "admin-orders.html": "orders", "admin-finance.html": "finance" };
       document.querySelectorAll(".side-nav a, .mobile-bottom-nav a").forEach(link => {
         const key = links[link.getAttribute("href")];
