@@ -255,6 +255,9 @@
     .page-orders #hud-section,.page-orders .analytics-row,.page-orders #col-products,.page-orders #col-finance{display:none!important}
     .page-orders .workspace-columns{display:block}
     .page-orders #col-orders{width:100%;max-width:1100px;margin:0 auto}
+    .page-finance #hud-section,.page-finance .analytics-row,.page-finance #col-products,.page-finance #col-orders{display:none!important}
+    .page-finance .workspace-columns{display:block}
+    .page-finance #col-finance{display:block!important;width:100%;max-width:1100px;margin:0 auto}
     .page-dashboard .mobile-bottom-nav a[href*="products"],.page-dashboard .mobile-bottom-nav a[href*="orders"]{display:none}
     @media(max-width:699px){.ops-toast{right:12px;top:12px}.main-area{padding-left:14px;padding-right:14px}}
 
@@ -292,7 +295,7 @@
           <a href="admin.html">📊 Operations Dashboard</a>
           <a href="admin-products.html">📦 Product Studio</a>
           <a href="admin-orders.html">🧾 Orders & Alerts <span id="nav-pending-count" class="nav-count">0</span></a>
-          <a href="admin.html#col-finance">💰 Finance & Growth</a>
+          <a href="admin-finance.html">💰 Finance & Growth</a>
           <a href="index.html">🌐 View Live Store</a>
         </nav>      </div>
       <button id="side-logout" class="btn-outline danger" type="button" style="width:100%; justify-content:center;">Sign out</button>
@@ -503,7 +506,7 @@
     <a href="admin.html"><span>🏠</span>Home</a>
     <a href="admin-products.html"><span>📦</span>Products</a>
     <a href="admin-orders.html"><span>🧾</span>Orders</a>
-    <a href="admin.html#col-finance"><span>💰</span>Finance</a>
+    <a href="admin-finance.html"><span>💰</span>Finance</a>
   </nav>
 
   <script type="module">
@@ -576,12 +579,20 @@
       }
     }
     const enableAlertsButton = document.getElementById("enable-notifications");
+    function syncAlertPermissionLabel() {
+      if (!enableAlertsButton) return;
+      if (!("Notification" in window)) { enableAlertsButton.textContent = "🔔 In-page alerts only"; enableAlertsButton.title = "This browser does not support notification permission."; return; }
+      if (Notification.permission === "granted") { enableAlertsButton.textContent = "✓ Browser alerts enabled"; enableAlertsButton.title = "Permission is saved by your browser; you do not need to enable it again after refresh."; }
+      else if (Notification.permission === "denied") { enableAlertsButton.textContent = "⚠ Allow alerts in browser settings"; enableAlertsButton.title = "Notifications are blocked for this site. Change the site permission in your browser settings."; }
+      else { enableAlertsButton.textContent = "🔔 Enable browser alerts"; enableAlertsButton.title = "Allow browser notifications once for this site."; }
+    }
+    syncAlertPermissionLabel();
     if (enableAlertsButton) enableAlertsButton.addEventListener("click", async () => {
       if (!("Notification" in window)) { alert("Browser notifications are not supported here. In-dashboard alerts will still work."); return; }
-      try {
-        const permission = await Notification.requestPermission();
-        enableAlertsButton.textContent = permission === "granted" ? "✓ Alerts enabled" : "🔔 Enable alerts";
-      } catch (_) { alert("Could not enable browser notifications."); }
+      if (Notification.permission === "granted") { syncAlertPermissionLabel(); alert("Browser notifications are already enabled for this site."); return; }
+      if (Notification.permission === "denied") { alert("Notifications are blocked by your browser. Open the site permissions in browser settings and change Notifications to Allow."); return; }
+      try { await Notification.requestPermission(); syncAlertPermissionLabel(); }
+      catch (_) { alert("Could not enable browser notifications."); }
     });
 
     function setRing(id, pct) {
