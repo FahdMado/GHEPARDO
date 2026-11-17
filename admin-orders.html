@@ -1156,7 +1156,26 @@
       if (!profile || profile.active !== true) throw new Error("This account is inactive or not registered.");
       return { owner: false, profile };
     }
+    const staffActionStyle = document.createElement("style");
+    staffActionStyle.textContent = `
+      .staff-no-product-edit #product-form,.staff-no-product-edit #seed-catalog-btn,
+      .staff-no-product-edit [data-edit-product],.staff-no-product-edit [data-delete-product],.staff-no-product-edit [data-duplicate-product]{display:none!important}
+      .staff-no-product-files [data-download-product]{display:none!important}
+      .staff-no-order-edit [data-delete]{display:none!important}
+      .staff-no-order-approve [data-confirm]{display:none!important}
+      .staff-no-order-delivery [data-wa-deliver],.staff-no-order-delivery [data-copy-link]{display:none!important}
+      .staff-no-marketing-edit [data-toggle-promo],.staff-no-marketing-edit [data-delete-promo]{display:none!important}
+    `;
+    document.head.appendChild(staffActionStyle);
     function applyTeamNavigation(access) {
+      const perms = access.profile.permissions || {};
+      const allowed = (moduleName, action) => access.owner || perms?.[moduleName]?.[action] === true;
+      document.body.classList.toggle("staff-no-product-edit", !allowed("products","edit"));
+      document.body.classList.toggle("staff-no-product-files", !allowed("products","files"));
+      document.body.classList.toggle("staff-no-order-edit", !allowed("orders","edit"));
+      document.body.classList.toggle("staff-no-order-approve", !allowed("orders","approve"));
+      document.body.classList.toggle("staff-no-order-delivery", !allowed("orders","delivery"));
+      document.body.classList.toggle("staff-no-marketing-edit", !allowed("marketing","edit"));
       if (teamNavLink) teamNavLink.style.display = access.owner ? "flex" : "none";
       if (teamNavTop) teamNavTop.style.display = access.owner ? "inline-flex" : "none";
       const links = { "admin.html": "dashboard", "admin-products.html": "products", "admin-orders.html": "orders", "admin-finance.html": "finance" };
