@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GHEPARDO | Products</title>
-  <meta name="description" content="GHEPARDO is a multi-industry brand ecosystem connecting digital innovation, commerce, hospitality, fashion and future ventures." />
+  <title>GHEPARDO | Digital Products & Business Tools</title>
+  <meta name="description" content="Discover practical GHEPARDO digital products, calculators, templates and business tools designed to help you build, innovate and grow." />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://fahdmado.github.io/GHEPARDO/products.html" />
   <meta name="theme-color" content="#080808" />
   <meta property="og:title" content="GHEPARDO — Beyond One Industry. Beyond One Vision." />
   <meta property="og:description" content="Building ideas, businesses, technology and experiences for a world of possibilities." />
@@ -319,6 +321,19 @@
 
     .catalog-note{margin:-8px auto 26px;max-width:900px;text-align:center;color:var(--text-muted);font-size:.82rem;line-height:1.7;padding:12px 16px;border:1px solid var(--border-gold);border-radius:14px;background:rgba(229,169,60,.06)}
     .product-card.is-coming{border-color:rgba(229,169,60,.34)}
+    .filter-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;margin-inline-start:5px;border-radius:20px;background:rgba(229,169,60,.12);color:var(--gold-light);font-size:.68rem}
+    .storefront-priority{scroll-margin-top:90px}
+    .product-actions{display:flex;gap:8px;align-items:center}
+    .product-details-btn{border:1px solid var(--border-gold);background:transparent;color:var(--gold-light);border-radius:30px;padding:8px 12px;font-size:.78rem;cursor:pointer}
+    .product-details-modal{display:none;position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,.88);align-items:center;justify-content:center;padding:16px}
+    .product-details-modal.open{display:flex}
+    .product-details-box{width:min(100%,560px);max-height:90vh;overflow:auto;background:#14100f;border:1px solid var(--gold);border-radius:22px;padding:24px;box-shadow:0 20px 70px #000}
+    .product-details-box h3{color:var(--gold-light);font-size:1.3rem;margin:12px 0}
+    .product-details-box p{color:var(--text-muted);line-height:1.8}
+    .product-details-close{float:left;background:none;border:0;color:var(--gold-light);font-size:1.8rem;cursor:pointer}
+    .mini-trust{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+    .mini-trust span{border:1px solid var(--border-gold);border-radius:20px;padding:6px 10px;color:var(--text-muted);font-size:.72rem}
+    @media(max-width:520px){.product-actions{flex-wrap:wrap}.product-actions>*{flex:1}}
     .product-card.is-coming .product-banner{background:radial-gradient(circle at 50% 35%,rgba(229,169,60,.18),transparent 65%),linear-gradient(135deg,#2a0a0e,#120d0c)}
     .product-card .coming-soon-btn{background:rgba(229,169,60,.12)!important;border:1px solid var(--border-gold)!important;color:var(--gold-light)!important;cursor:default!important;box-shadow:none!important}
     .product-group-label{font-size:.68rem;color:var(--gold);letter-spacing:1px;margin-bottom:7px;font-weight:800}
@@ -694,18 +709,18 @@
 
   <section id="home" class="hero">
     <div class="hero-copy">
-      <div class="hero-badge">A MULTI-INDUSTRY BRAND ECOSYSTEM</div>
-      <h2>BEYOND ONE INDUSTRY.<br><span>BEYOND ONE VISION.</span></h2>
-      <p>GHEPARDO is an evolving brand ecosystem built to connect ideas, technology, commerce and experiences. One bold identity. Multiple worlds. A future designed to scale.</p>
+      <div class="hero-badge">GHEPARDO DIGITAL STORE • OFFICIAL PRODUCTS</div>
+      <h2>BUILD SMARTER.<br><span>GROW STRONGER.</span></h2>
+      <p>أدوات رقمية عملية، حاسبات ذكية، وقوالب جاهزة تساعد أصحاب المشاريع والمستقلين وصناع المحتوى على اتخاذ قرارات أفضل وإنجاز العمل بثقة. منتج مفيد اليوم، ومنظومة أكبر نبنيها للمستقبل.</p>
       <div class="hero-btns">
-        <a href="solutions.html" class="btn-gold">Explore Our World ↗</a>
-        <a href="about.html" class="btn-outline">Discover GHEPARDO</a>
+        <a href="#products" class="btn-gold">اكتشف المنتجات ↓</a>
+        <a href="my-orders.html" class="btn-outline">طلباتي والتنزيلات</a>
       </div>
       <div class="trust-strip">
-        <div class="trust-item"><strong>One Identity</strong>One master brand</div>
-        <div class="trust-item"><strong>Four Worlds</strong>Connected industries</div>
-        <div class="trust-item"><strong>Global Mindset</strong>Built to expand</div>
-        <div class="trust-item"><strong>Long-Term Vision</strong>Designed to evolve</div>
+        <div class="trust-item"><strong>Useful by Design</strong>حلول عملية وليست مجرد ملفات</div>
+        <div class="trust-item"><strong>One Brand</strong>هوية GHEPARDO الموحدة</div>
+        <div class="trust-item"><strong>Instant Access</strong>روابط تنزيل بعد تأكيد الدفع</div>
+        <div class="trust-item"><strong>Built to Grow</strong>منتجات تتطور مع احتياجك</div>
       </div>
     </div>
     <div class="hero-visual">
@@ -742,22 +757,22 @@
 
   <section id="products">
     <div class="section-title">
-      <div class="section-kicker">THE GHEPARDO DIGITAL EMPIRE</div>
-      <h3>كتالوج منتجات GHEPARDO</h3>
-      <p>24 فكرة رقمية عملية، موزعة على 7 مجموعات — نجهزها معاً تباعاً</p>
+      <div class="section-kicker">THE OFFICIAL GHEPARDO DIGITAL STORE</div>
+      <h3>منتجات وأدوات GHEPARDO</h3>
+      <p>حلول رقمية مصممة لتختصر وقتك، تحسن قراراتك، وتساعد مشروعك على النمو.</p>
     </div>
 
     <div class="filter-bar" id="catalog-filters">
-      <button class="filter-btn active" onclick="filterProducts('all', this)">كل المنتجات · 24</button>
-      <button class="filter-btn" onclick="filterProducts('money', this)">💰 المال والوظيفة</button>
-      <button class="filter-btn" onclick="filterProducts('ai', this)">🤖 الذكاء الاصطناعي وإدارة الأعمال</button>
-      <button class="filter-btn" onclick="filterProducts('commerce', this)">🛍️ التجارة وصناع المحتوى والبيت</button>
-      <button class="filter-btn" onclick="filterProducts('small-business', this)">🏪 أصحاب المشاريع والمتاجر</button>
-      <button class="filter-btn" onclick="filterProducts('travel', this)">✈️ المغتربون والسفر</button>
-      <button class="filter-btn" onclick="filterProducts('mindset', this)">🧠 القرارات وإدارة الذات</button>
-      <button class="filter-btn" onclick="filterProducts('daily', this)">📅 الحياة اليومية</button>
+      <button class="filter-btn active" data-filter="all" onclick="filterProducts('all', this)">كل المنتجات <span class="filter-count" id="count-all">0</span></button>
+      <button class="filter-btn" data-filter="money" onclick="filterProducts('money', this)">💰 المال والوظيفة <span class="filter-count" id="count-money">0</span></button>
+      <button class="filter-btn" data-filter="ai" onclick="filterProducts('ai', this)">🤖 الذكاء الاصطناعي وإدارة الأعمال <span class="filter-count" id="count-ai">0</span></button>
+      <button class="filter-btn" data-filter="commerce" onclick="filterProducts('commerce', this)">🛍️ التجارة وصناع المحتوى والبيت <span class="filter-count" id="count-commerce">0</span></button>
+      <button class="filter-btn" data-filter="small-business" onclick="filterProducts('small-business', this)">🏪 أصحاب المشاريع والمتاجر <span class="filter-count" id="count-small_business">0</span></button>
+      <button class="filter-btn" data-filter="travel" onclick="filterProducts('travel', this)">✈️ المغتربون والسفر <span class="filter-count" id="count-travel">0</span></button>
+      <button class="filter-btn" data-filter="mindset" onclick="filterProducts('mindset', this)">🧠 القرارات وإدارة الذات <span class="filter-count" id="count-mindset">0</span></button>
+      <button class="filter-btn" data-filter="daily" onclick="filterProducts('daily', this)">📅 الحياة اليومية <span class="filter-count" id="count-daily">0</span></button>
     </div>
-    <div class="catalog-note">✨ هذه إصدارات قيد الإعداد. ستُفتح تفاصيل الشراء والتنزيل بعد تجهيز كل منتج واعتماده.</div>
+    <div class="catalog-note" id="catalog-note" role="status" aria-live="polite">يتم تحميل كتالوج GHEPARDO المباشر…</div>
 
     <div class="products-grid" id="products-grid"></div>
   </section>
@@ -809,6 +824,17 @@
     <a href="products.html" data-page-link="products" aria-label="Products"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span>Products</span></a>
     <a href="my-orders.html" aria-label="My Orders"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v17H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>My Orders</span></a>
     <a href="contact.html" data-page-link="contact" aria-label="Contact"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-4-.9L3 21l1.7-4.5A8.3 8.3 0 1 1 21 11.5Z"/><path d="M8 11h8M8 14h5"/></svg><span>Contact</span></a>
+  </div>
+
+  <div class="product-details-modal" id="product-details-modal" role="dialog" aria-modal="true" aria-labelledby="product-details-title" onclick="if(event.target===this)closeProductDetails()">
+    <div class="product-details-box">
+      <button type="button" class="product-details-close" aria-label="Close details" onclick="closeProductDetails()">×</button>
+      <div class="section-kicker">GHEPARDO DIGITAL PRODUCT</div>
+      <h3 id="product-details-title">Product details</h3>
+      <p id="product-details-description"></p>
+      <div class="mini-trust"><span>ملفات رقمية</span><span>تنزيل بعد تأكيد الدفع</span><span>دعم GHEPARDO</span></div>
+      <div class="product-footer"><strong class="price" id="product-details-price"></strong><button type="button" class="btn-gold" id="product-details-buy">أضف إلى السلة</button></div>
+    </div>
   </div>
 
   <div class="modal-overlay" id="checkout-modal">
@@ -915,8 +941,15 @@
           <input type="text" id="cust-contact" placeholder="e.g. 012xxxxxxxx or email@domain.com" required />
         </div>
         <div class="form-group">
-          <label>Payment Method & Reference / Last 4 Digits</label>
-          <input type="text" id="cust-ref" placeholder="e.g. InstaPay Ref #4821 or Orange Cash" required />
+          <label for="cust-payment-method">وسيلة الدفع</label>
+          <select id="cust-payment-method" required style="width:100%;background:#080707;border:1px solid var(--border-gold);color:#fff;padding:11px 13px;border-radius:10px;">
+            <option value="instapay">InstaPay</option>
+            <option value="orange_cash">Orange Cash</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="cust-ref">رقم مرجع الدفع أو آخر 4 أرقام</label>
+          <input type="text" id="cust-ref" maxlength="120" placeholder="اكتب رقم العملية أو بيانات التحويل" required />
         </div>
         <button type="submit" id="submit-order-btn" class="btn-gold" style="width:100%;">Confirm Order & Send via WhatsApp →</button>
       </form>
@@ -949,8 +982,15 @@
 
     onValue(ref(db, "products"), snapshot => {
       const data = snapshot.val() || {};
-      products = Object.entries(data).map(([id, product]) => Object.assign({id}, product)).filter(p => (p.status === "published" || p.status === "coming_soon") && Number(p.stock || 0) > 0);
+      products = Object.entries(data).map(([id, product]) => Object.assign({id}, product)).filter(p => (p.status === "published" || p.status === "coming_soon") && Number(p.stock ?? 999) > 0);
+      const allowed = new Map(products.filter(p => p.status === "published").map(p => [String(p.id), p]));
+      try {
+        const saved = JSON.parse(localStorage.getItem("ghepardo_cart") || "[]");
+        cart = Array.isArray(saved) ? saved.map(item => allowed.get(String(item.id))).filter(Boolean).map(item => ({id:item.id,title:item.title,price:Number(item.price)})) : [];
+      } catch (_) { cart = []; }
       renderProducts(activeProductFilter);
+      updateCartUI();
+      updateCatalogCounts();
     }, error => { document.getElementById("products-grid").textContent = "Products are temporarily unavailable."; console.error(error); });
 
     function safeText(value) {
@@ -962,7 +1002,7 @@
       grid.innerHTML = "";
       const filtered = filter === "all" ? products : products.filter(p => p.category === filter);
       if (!filtered.length) {
-        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:35px 18px;color:var(--text-muted)"><h4 style="color:var(--gold-light);margin-bottom:8px">لا توجد منتجات في هذه المجموعة حالياً</h4><p>تابعنا لاكتشاف الإصدارات القادمة.</p></div>';
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:35px 18px;color:var(--text-muted)"><h4 style="color:var(--gold-light);margin-bottom:8px">لا توجد منتجات في هذه المجموعة حالياً</h4><p>تابعنا لاكتشاف الإصدارات القادمة، أو استكشف المجموعات الأخرى.</p></div>';
         return;
       }
       filtered.forEach(p => {
@@ -970,10 +1010,37 @@
         const coming = p.status === "coming_soon";
         const visual = img ? '<img src="' + safeText(img) + '" alt="' + safeText(p.title) + '" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">' : '<div class="product-emoji">' + safeText(p.emoji || "✦") + '</div>';
         const groupNames = {money:"المال والوظيفة",ai:"الذكاء الاصطناعي وإدارة الأعمال",commerce:"التجارة وصناع المحتوى والبيت","small-business":"أصحاب المشاريع والمتاجر",travel:"المغتربون والسفر",mindset:"القرارات وإدارة الذات",daily:"الحياة اليومية"};
-        const card = '<div class="product-card' + (coming ? ' is-coming' : '') + '" dir="rtl"><div class="product-banner" style="position:relative;overflow:hidden">' + visual + '<span class="product-badge">' + safeText(coming ? "قريباً" : (p.badge || "GHEPARDO")) + '</span>' + '</div><div class="product-body"><div class="product-group-label">' + safeText(groupNames[p.category] || "GHEPARDO DIGITAL") + '</div><h4>' + safeText(p.title) + '</h4><p>' + safeText(p.description || "") + '</p><div class="product-footer">' + (coming ? '<div class="price" style="font-size:.9rem">قيد التجهيز</div><button class="btn-gold coming-soon-btn" type="button" disabled style="padding:8px 14px;font-size:.8rem">قريباً</button>' : '<div class="price">' + Number(p.price).toLocaleString() + '<small> EGP</small></div><button class="btn-gold" style="padding:8px 14px;font-size:.8rem" onclick="addToCart(\'' + safeText(p.id) + '\')">Buy Now +</button>') + '</div></div></div>';
+        const card = '<article class="product-card' + (coming ? ' is-coming' : '') + '" dir="rtl"><div class="product-banner" style="position:relative;overflow:hidden">' + visual + '<span class="product-badge">' + safeText(coming ? "قريباً" : (p.badge || "GHEPARDO")) + '</span></div><div class="product-body"><div class="product-group-label">' + safeText(groupNames[p.category] || "GHEPARDO DIGITAL") + '</div><h4>' + safeText(p.title) + '</h4><p>' + safeText(p.description || "") + '</p><div class="product-footer">' + (coming ? '<div class="price" style="font-size:.9rem">قيد التجهيز</div><button class="btn-gold coming-soon-btn" type="button" disabled style="padding:8px 14px;font-size:.8rem">قريباً</button>' : '<div class="price">' + Number(p.price).toLocaleString() + '<small> EGP</small></div><div class="product-actions"><button class="product-details-btn" type="button" onclick="openProductDetails(\'' + safeText(p.id) + '\')">التفاصيل</button><button class="btn-gold" type="button" style="padding:8px 14px;font-size:.8rem" onclick="addToCart(\'' + safeText(p.id) + '\')">اشترِ الآن +</button></div>') + '</div></div></article>';
         grid.insertAdjacentHTML("beforeend", card);
       });
     };
+    function updateCatalogCounts() {
+      const published = products.filter(p => p.status === "published");
+      const allCount = document.getElementById("count-all");
+      if (allCount) allCount.textContent = published.length;
+      const slugIds = {money:"money",ai:"ai",commerce:"commerce","small-business":"small_business",travel:"travel",mindset:"mindset",daily:"daily"};
+      Object.entries(slugIds).forEach(([slug,id]) => {
+        const el = document.getElementById("count-" + id);
+        if (el) el.textContent = published.filter(p => p.category === slug).length;
+      });
+      const note = document.getElementById("catalog-note");
+      const soon = products.filter(p => p.status === "coming_soon").length;
+      if (note) note.textContent = published.length
+        ? "يعرض المتجر " + published.length + " منتجاً متاحاً للشراء الآن، مع " + soon + " إصداراً قادماً قيد التجهيز. يتم تحديث الكتالوج مباشرة."
+        : "نعمل حالياً على تجهيز الإصدارات الأولى. تابعنا لاكتشاف المنتجات فور اعتمادها وإتاحتها للشراء.";
+    }
+
+    window.openProductDetails = function(id) {
+      const product = products.find(p => String(p.id) === String(id) && p.status === "published");
+      if (!product) return;
+      document.getElementById("product-details-title").textContent = product.title;
+      document.getElementById("product-details-description").textContent = product.description || "منتج رقمي من GHEPARDO.";
+      document.getElementById("product-details-price").textContent = Number(product.price).toLocaleString() + " EGP";
+      document.getElementById("product-details-buy").onclick = () => { closeProductDetails(); addToCart(product.id); };
+      document.getElementById("product-details-modal").classList.add("open");
+    };
+    window.closeProductDetails = function() { document.getElementById("product-details-modal").classList.remove("open"); };
+
     window.filterProducts = function(cat, btn) {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -1027,6 +1094,7 @@
     }
 
     function updateCartUI() {
+      try { localStorage.setItem("ghepardo_cart", JSON.stringify(cart)); } catch (_) {}
       document.getElementById('cart-count').innerText = cart.length;
       const mobileCount = document.getElementById("mob-cart-count");
       if (mobileCount) mobileCount.innerText = cart.length;
@@ -1041,7 +1109,7 @@
       cart.forEach((item, idx) => {
         list.innerHTML += `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:0.86rem;">
-            <span>${item.title}</span>
+            <span>${safeText(item.title)}</span>
             <div style="white-space:nowrap;">
               <strong style="color:var(--gold-light); margin-right:8px;">${item.price} EGP</strong>
               <button onclick="removeFromCart(${idx})" style="background:none; border:none; color:#ff5e5e; cursor:pointer;">✕</button>
@@ -1076,7 +1144,12 @@
       const name = document.getElementById('cust-name').value.trim();
       const contact = document.getElementById('cust-contact').value.trim();
       const refNum = document.getElementById('cust-ref').value.trim();
+      const paymentMethod = document.getElementById("cust-payment-method").value;
       const { subtotal, discountPct, finalTotal } = calculateTotals();
+      if (name.length < 2 || contact.length < 5 || refNum.length < 1) {
+        btn.disabled = false; btn.innerText = 'Confirm Order & Send via WhatsApp →';
+        alert("Please complete your name, contact and payment reference."); return;
+      }
       const downloadToken = makeDownloadToken();
       const orderRef = push(ref(db, "orders"));
 
@@ -1085,7 +1158,7 @@
       try {
         await update(ref(db), {
           ["orders/" + orderRef.key]: {
-            customerName: name, contact, paymentReference: refNum,
+            customerName: name, contact, paymentReference: refNum, paymentMethod,
             items: orderItems, subtotalEGP: subtotal,
             promoCode: appliedPromo ? appliedPromo.code : null,
             discountPercent: discountPct,
@@ -1093,7 +1166,7 @@
             downloadToken, timestampMs: createdAt
           },
           ["customerOrders/" + downloadToken]: {
-            items: orderItems.map(i => ({ title: i.title, price: i.price })),
+            items: orderItems.map(i => ({ productId: i.productId, title: i.title, price: i.price })),
             totalEGP: finalTotal, status: "pending", createdAt,
             expiresAt: 0, downloadToken
           }
@@ -1123,7 +1196,7 @@
 
       const itemsText = cart.map(i => '- ' + i.title + ' (' + i.price + ' EGP)').join('%0A');
       const promoLine = appliedPromo ? '%0A*Promo Code:* ' + appliedPromo.code + ' (-' + discountPct + '%25)' : '';
-      const msg = '*NEW GHEPARDO ORDER*%0A*Order ID:* ' + orderRef.key + '%0A*Name:* ' + encodeURIComponent(name) + '%0A*Delivery Contact:* ' + encodeURIComponent(contact) + '%0A*Payment Ref:* ' + encodeURIComponent(refNum) + promoLine + '%0A*Items:*%0A' + itemsText + '%0A*Total:* ' + finalTotal + ' EGP';
+      const msg = '*NEW GHEPARDO ORDER*%0A*Order ID:* ' + orderRef.key + '%0A*Name:* ' + encodeURIComponent(name) + '%0A*Delivery Contact:* ' + encodeURIComponent(contact) + '%0A*Payment Method:* ' + encodeURIComponent(paymentMethod) + '%0A*Payment Ref:* ' + encodeURIComponent(refNum) + promoLine + '%0A*Items:*%0A' + itemsText + '%0A*Total:* ' + finalTotal + ' EGP';
       btn.innerText = 'Order Saved ✓';
       btn.disabled = true;
       window.open('https://wa.me/' + OWNER_WHATSAPP + '?text=' + msg, '_blank');
@@ -1146,7 +1219,14 @@
       document.getElementById('sub-email').value = '';
     };
 
+    const storeSection = document.getElementById("products");
+    const heroSection = document.getElementById("home");
+    if (storeSection && heroSection && heroSection.parentNode) {
+      heroSection.parentNode.insertBefore(storeSection, heroSection.nextSibling);
+      storeSection.classList.add("storefront-priority");
+    }
     renderProducts();
+    updateCatalogCounts();
   </script>
 </body>
 </html>
