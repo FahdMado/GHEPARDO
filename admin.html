@@ -297,9 +297,9 @@
     <div class="lock-box">
       <img src="Logo.png" alt="GHEPARDO" style="width:64px; margin-bottom:10px;" />
       <h2 style="font-family:'Cinzel',serif; color:var(--gold-light); margin-bottom:6px;">ADMIN ACCESS</h2>
-      <p class="muted" style="margin-bottom:16px;">Sign in with your GHEPARDO owner account</p>
+      <p class="muted" style="margin-bottom:16px;">Sign in with your GHEPARDO team username</p>
       <form id="admin-login-form">
-        <input type="email" id="admin-email" placeholder="Email address" autocomplete="username" required />
+        <input type="text" id="admin-email" placeholder="Username (owner may use email)" autocomplete="username" required />
         <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password" required />
         <button class="btn" type="submit" style="width:100%;">Sign in securely →</button>
       </form>
@@ -323,6 +323,7 @@
           <a href="admin-products.html">📦 Product Studio</a>
           <a href="admin-orders.html">🧾 Orders & Alerts <span id="nav-pending-count" class="nav-count">0</span></a>
           <a href="admin-finance.html">💰 Finance & Growth</a>
+          <a id="team-nav-link" href="admin-team.html" style="display:none;">👥 Team & Access</a>
           <a href="index.html">🌐 View Live Store</a>
         </nav>      </div>
       <button id="side-logout" class="btn-outline danger" type="button" style="width:100%; justify-content:center;">Sign out</button>
@@ -742,7 +743,7 @@
       button.disabled = true; button.textContent = "Signing in..."; loginError.textContent = "";
       try {
         await signInWithEmailAndPassword(auth,
-          document.getElementById("admin-email").value.trim(),
+          (document.getElementById("admin-email").value.trim().includes("@") ? document.getElementById("admin-email").value.trim() : document.getElementById("admin-email").value.trim().toLowerCase() + "@staff.ghepardo.com"),
           document.getElementById("admin-password").value);
       } catch (error) {
         loginError.textContent = "Sign-in failed. Check your email and password.";
@@ -1145,16 +1146,39 @@
       catch (_) { alert("Payment confirmed (valid 23h). Link: " + customerUrl); }
     }
 
+    const CURRENT_PAGE_PERMISSION = "dashboard";
+    const teamNavLink = document.getElementById("team-nav-link");
+    async function resolveStaffAccess(user) {
+      if (user.uid === OWNER_UID) return { owner: true, profile: { displayName: "GHEPARDO Owner", active: true, permissions: {} } };
+      const profileSnap = await get(ref(db, "staff/" + user.uid));
+      const profile = profileSnap.val();
+      if (!profile || profile.active !== true) throw new Error("This account is inactive or not registered.");
+      return { owner: false, profile };
+    }
+    function applyTeamNavigation(access) {
+      if (teamNavLink) teamNavLink.style.display = access.owner ? "flex" : "none";
+      const links = { "admin.html": "dashboard", "admin-products.html": "products", "admin-orders.html": "orders", "admin-finance.html": "finance" };
+      document.querySelectorAll(".side-nav a, .mobile-bottom-nav a").forEach(link => {
+        const key = links[link.getAttribute("href")];
+        if (!key || access.owner) return;
+        link.style.display = access.profile.permissions?.[key]?.view === true ? "" : "none";
+      });
+    }
     onAuthStateChanged(auth, async user => {
       if (!user) {
         stopDashboard(); lock.style.display = "flex"; logoutButton.style.display = "none";
         return;
       }
-      if (user.uid !== OWNER_UID) {
-        loginError.textContent = "This Firebase account is not the authorized GHEPARDO owner.";
-        await signOut(auth); return;
+      try {
+        const access = await resolveStaffAccess(user);
+        if (!access.owner && access.profile.permissions?.[CURRENT_PAGE_PERMISSION]?.view !== true)
+          throw new Error("You do not have permission to open this section.");
+        applyTeamNavigation(access);
+        lock.style.display = "none"; logoutButton.style.display = "inline-block"; startDashboard();
+      } catch (error) {
+        loginError.textContent = error.message || "Access denied.";
+        await signOut(auth);
       }
-      lock.style.display = "none"; logoutButton.style.display = "inline-block"; startDashboard();
     });
   </script>
 </body>
