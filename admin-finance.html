@@ -529,6 +529,7 @@
                   <input type="number" id="promo-discount-input" placeholder="e.g. 20" min="1" max="50" required />
                 </div>
               </div>
+              <div class="admin-grid"><div class="field"><label>Marketer / Partner Name</label><input type="text" id="promo-marketer-input" maxlength="80" placeholder="Partner name" /></div><div class="field"><label>Commission (%)</label><input type="number" id="promo-commission-input" min="0" max="100" step="0.5" value="10" /></div></div>
               <button type="submit" id="add-promo-btn" class="btn" style="width:100%;">+ Add & Activate Promo Code</button>
               <p id="promo-msg" class="muted" style="margin-top:6px;"></p>
             </form>
@@ -803,6 +804,7 @@
                   <span class="badge ${active ? 'confirmed' : 'paused'}">${active ? 'ACTIVE' : 'PAUSED'}</span>
                 </div>
                 <span class="promo-discount">Discount: <strong>${Number(item.discount || 0)}% OFF</strong></span>
+                <span class="muted">Marketer: ${escapeHTML(item.marketerName || 'Not assigned')} · Commission: ${Number(item.commissionRate || 0)}%</span>
               </div>
               <div class="promo-actions">
                 <button class="btn-outline" type="button" data-toggle-promo="${escapeHTML(code)}" data-promo-state="${active ? '1' : '0'}">${active ? 'Pause' : 'Activate'}</button>
@@ -811,6 +813,7 @@
             </div>
           `;
         }).join("");
+        const pf=document.getElementById("report-promo-filter");if(pf){const keep=pf.value;pf.innerHTML='<option value="">All codes</option>'+rows.map(([c])=>'<option value="'+escapeHTML(c)+'">'+escapeHTML(c)+'</option>').join('');pf.value=keep;}
       }, error => {
         document.getElementById("promo-list").textContent = "Could not load promo codes: " + error.message;
       });
@@ -898,8 +901,9 @@
       const msg = document.getElementById("promo-msg");
       const code = codeInput.value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "");
       const discount = Number(discInput.value);
-
-      if (!code || discount < 1 || discount > 50) {
+      const marketerName = document.getElementById("promo-marketer-input").value.trim();
+      const commissionRate = Number(document.getElementById("promo-commission-input").value || 0);
+      if (!code || discount < 1 || discount > 50 || commissionRate < 0 || commissionRate > 100) {
         msg.textContent = "Enter a valid code (letters/numbers) and discount (1-50%).";
         return;
       }
@@ -908,10 +912,14 @@
           code,
           discount,
           active: true,
+          marketerName,
+          commissionRate,
           createdAt: Date.now()
         });
         codeInput.value = "";
         discInput.value = "";
+        document.getElementById("promo-marketer-input").value = "";
+        document.getElementById("promo-commission-input").value = "10";
         msg.textContent = `✓ Promo code ${code} (${discount}% OFF) is now LIVE!`;
       } catch (err) {
         msg.textContent = "Error saving promo code: " + err.message;
