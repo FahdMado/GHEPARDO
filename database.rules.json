@@ -17,7 +17,7 @@
         "items": {
           ".validate": "newData.hasChildren()",
           "$itemId": {
-            ".validate": "newData.hasChildren(['title','price'])",
+            ".validate": "newData.hasChildren(['title','price','productId'])",
             "title": {
               ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 160"
             },
@@ -42,7 +42,22 @@
           ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 60000"
         },
         "$other": {
-          ".validate": "$other === 'downloadToken' && newData.isString() && newData.val().matches(/^[a-f0-9]{48}$/)"
+          ".validate": false
+        },
+        "subtotalEGP": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 500000"
+        },
+        "discountPercent": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 50"
+        },
+        "promoCode": {
+          ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 32"
+        },
+        "paymentMethod": {
+          ".validate": "newData.val() === 'instapay' || newData.val() === 'orange_cash'"
+        },
+        "downloadToken": {
+          ".validate": "newData.isString() && newData.val().matches(/^[a-f0-9]{48}$/)"
         }
       }
     },
@@ -159,6 +174,28 @@
       },
       "$other": {
         ".validate": false
+      }
+    },
+    "coupons": {
+      ".read": true,
+      ".write": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
+      "$code": {
+        ".validate": "newData.hasChildren(['code','discount','active','createdAt'])",
+        "code": {
+          ".validate": "newData.isString() && newData.val() === $code && $code.matches(/^[A-Z0-9_-]{2,32}$/)"
+        },
+        "discount": {
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 50"
+        },
+        "active": {
+          ".validate": "newData.isBoolean()"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber() && newData.val() > 0"
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     }
   }
