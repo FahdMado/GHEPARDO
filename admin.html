@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GHEPARDO | Executive Command Center</title>
+  <title>GHEPARDO | Global Command Center</title>
   <link rel="icon" type="image/png" href="Logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-void: #060505;
-      --bg-panel: #110d0c;
-      --bg-card: #171110;
-      --bg-crimson: linear-gradient(145deg, #2b0c10, #14090a);
+      --bg-void: #050404;
+      --bg-panel: #100c0b;
+      --bg-card: #16100f;
+      --bg-crimson: linear-gradient(145deg, #2d0b10, #120809);
       --gold: #e5a93c;
       --gold-light: #f8cf7a;
       --gold-dark: #a66f14;
@@ -32,21 +32,21 @@
       color: var(--text);
       font-family: 'Plus Jakarta Sans', sans-serif;
       background-image:
-        radial-gradient(circle at 85% 10%, rgba(120, 20, 32, 0.35), transparent 42%),
-        radial-gradient(circle at 10% 80%, rgba(229, 169, 60, 0.08), transparent 45%);
+        radial-gradient(circle at 85% 8%, rgba(125, 20, 34, 0.36), transparent 42%),
+        radial-gradient(circle at 12% 85%, rgba(229, 169, 60, 0.08), transparent 45%);
       min-height: 100vh;
     }
 
-    /* ================= LOCK SCREEN ================= */
+    /* Lock Screen */
     #lock-screen {
-      position: fixed; inset: 0; background: rgba(6, 5, 5, 0.96);
-      backdrop-filter: blur(12px); z-index: 9999;
+      position: fixed; inset: 0; background: rgba(5, 4, 4, 0.97);
+      backdrop-filter: blur(14px); z-index: 9999;
       display: flex; align-items: center; justify-content: center; padding: 20px;
     }
     .lock-box {
       background: var(--bg-panel); border: 1px solid var(--gold);
       border-radius: 24px; padding: 30px 24px; width: 100%; max-width: 370px;
-      text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.85);
+      text-align: center; box-shadow: 0 24px 65px rgba(0,0,0,0.9);
     }
     .lock-box input {
       width: 100%; background: #080707; border: 1px solid var(--border);
@@ -55,58 +55,63 @@
     }
     .lock-box input:focus { border-color: var(--gold); }
 
-    /* ================= BUTTONS & BADGES ================= */
+    /* Buttons & Badges */
     .btn {
       background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
-      color: #090706; border: none; padding: 9px 16px; border-radius: 50px;
-      font-weight: 700; font-size: 0.8rem; cursor: pointer; text-decoration: none;
+      color: #090706; border: none; padding: 9px 15px; border-radius: 50px;
+      font-weight: 700; font-size: 0.78rem; cursor: pointer; text-decoration: none;
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
       white-space: nowrap; transition: 0.2s;
     }
     .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 18px rgba(229, 169, 60, 0.35); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-wa {
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      color: #fff; border: none; padding: 8px 14px; border-radius: 50px;
+      font-weight: 700; font-size: 0.76rem; cursor: pointer; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+    }
     .btn-outline {
       background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-      color: var(--gold-light); padding: 8px 14px; border-radius: 50px;
-      font-size: 0.78rem; font-weight: 600; cursor: pointer; text-decoration: none;
+      color: var(--gold-light); padding: 7px 13px; border-radius: 50px;
+      font-size: 0.76rem; font-weight: 600; cursor: pointer; text-decoration: none;
       display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
     }
     .danger { color: var(--red); border-color: rgba(255, 107, 107, 0.4); }
     .badge {
-      padding: 3px 10px; border-radius: 50px; font-size: 0.68rem;
+      padding: 3px 10px; border-radius: 50px; font-size: 0.66rem;
       font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
     }
     .confirmed { background: rgba(46, 204, 113, 0.16); color: var(--green); border: 1px solid var(--green); }
     .pending { background: rgba(229, 169, 60, 0.16); color: var(--gold-light); border: 1px solid var(--gold); }
-    .muted { color: var(--muted); font-size: 0.8rem; line-height: 1.5; }
+    .paused { background: rgba(255, 107, 107, 0.14); color: var(--red); border: 1px solid rgba(255, 107, 107, 0.45); }
+    .muted { color: var(--muted); font-size: 0.78rem; line-height: 1.5; }
 
-    /* ================= SHELL LAYOUT (RESPONSIVE: MOBILE / TABLET / DESKTOP) ================= */
+    /* Global Command Shell */
     .app-shell { display: flex; min-height: 100vh; }
 
-    /* Desktop Left Sidebar (>= 1080px - Matches Image 3) */
     .sidebar {
-      width: 245px; background: #0a0808; border-right: 1px solid var(--border);
+      width: 250px; background: #090707; border-right: 1px solid var(--border);
       padding: 24px 16px; display: flex; flex-direction: column; justify-content: space-between;
       position: fixed; top: 0; bottom: 0; left: 0; z-index: 90;
     }
     .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 0 8px 20px; border-bottom: 1px solid var(--border); }
-    .sidebar-brand img { width: 38px; height: 38px; object-fit: contain; }
-    .sidebar-brand h2 { font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--gold-light); letter-spacing: 1px; }
-    .sidebar-brand span { display: block; font-size: 0.65rem; color: var(--muted); }
+    .sidebar-brand img { width: 40px; height: 40px; object-fit: contain; }
+    .sidebar-brand h2 { font-family: 'Cinzel', serif; font-size: 1.12rem; color: var(--gold-light); letter-spacing: 1.2px; }
+    .sidebar-brand span { display: block; font-size: 0.64rem; color: var(--muted); }
     .side-nav { display: flex; flex-direction: column; gap: 6px; margin-top: 20px; }
     .side-nav a {
       display: flex; align-items: center; gap: 10px; padding: 11px 14px;
       border-radius: 12px; color: var(--muted); text-decoration: none;
-      font-size: 0.85rem; font-weight: 600; transition: 0.2s;
+      font-size: 0.84rem; font-weight: 600; transition: 0.2s;
     }
     .side-nav a:hover, .side-nav a.active {
       background: linear-gradient(90deg, rgba(229, 169, 60, 0.18), transparent);
       color: var(--gold-light); border-left: 3px solid var(--gold);
     }
 
-    .main-area { flex: 1; margin-left: 245px; padding: 22px 3% 85px; max-width: 1550px; }
+    .main-area { flex: 1; margin-left: 250px; padding: 22px 3% 90px; max-width: 1600px; }
 
-    /* Top Header */
     .topbar {
       display: flex; justify-content: space-between; align-items: center;
       padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 22px; gap: 12px;
@@ -114,11 +119,11 @@
     .mobile-brand { display: none; align-items: center; gap: 10px; }
     .mobile-brand img { width: 38px; height: 38px; object-fit: contain; }
     .mobile-brand h1 { font-family: 'Cinzel', serif; font-size: 1.15rem; color: var(--gold-light); }
-    .mobile-brand span { display: block; font-size: 0.65rem; color: var(--muted); }
+    .mobile-brand span { display: block; font-size: 0.64rem; color: var(--muted); }
     .desktop-title h1 { font-family: 'Cinzel', serif; font-size: 1.45rem; color: var(--gold-light); letter-spacing: 1.5px; }
     .desktop-title p { font-size: 0.78rem; color: var(--muted); }
 
-    /* ================= HUD TELEMETRY (CIRCULAR RINGS + BARS - MATCHES IMAGES 1 & 2) ================= */
+    /* Telemetry HUD */
     .hud-banner {
       background: var(--bg-crimson); border: 1px solid var(--border-strong);
       border-radius: 22px; padding: 20px; margin-bottom: 22px;
@@ -127,7 +132,7 @@
     .hud-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold-light); margin-bottom: 14px; font-weight: 700; display: flex; justify-content: space-between; }
     .rings-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
     .ring-card {
-      background: rgba(8, 6, 6, 0.65); border: 1px solid var(--border);
+      background: rgba(8, 6, 6, 0.68); border: 1px solid var(--border);
       border-radius: 16px; padding: 14px 10px; text-align: center;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
@@ -142,7 +147,7 @@
     }
     .ring-title { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
 
-    /* Tablet & Desktop Analytics Chart Strip (Matches Image 2) */
+    /* Analytics Row */
     .analytics-row {
       display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; margin-bottom: 24px;
     }
@@ -153,35 +158,36 @@
     .panel-head {
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.06);
+      gap: 8px;
     }
-    .panel-head h3 { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold-light); letter-spacing: 0.8px; }
+    .panel-head h3 { font-family: 'Cinzel', serif; font-size: 0.98rem; color: var(--gold-light); letter-spacing: 0.8px; }
     .mini-bars { display: flex; align-items: flex-end; gap: 8px; height: 95px; padding-top: 10px; }
     .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; height: 100%; justify-content: flex-end; }
     .bar-fill { width: 100%; max-width: 24px; background: linear-gradient(180deg, var(--gold-light), var(--gold-dark)); border-radius: 6px 6px 2px 2px; min-height: 8px; transition: height 0.4s; }
     .bar-col span { font-size: 0.65rem; color: var(--muted); }
 
-    /* ================= 3-COLUMN WORKSPACE ON DESKTOP (MATCHES IMAGE 3) ================= */
+    /* 3-Column Global Command Workspace */
     .workspace-columns {
-      display: grid; grid-template-columns: 1.15fr 1.15fr 0.85fr; gap: 18px; align-items: start;
+      display: grid; grid-template-columns: 1.15fr 1.1fr 0.95fr; gap: 18px; align-items: start;
     }
 
-    /* Form & Product Cards */
     .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
     .field label { font-size: 0.74rem; color: var(--muted); }
     .field input, .field textarea, .field select {
       width: 100%; background: #080707; border: 1px solid var(--border);
-      color: #fff; padding: 9px 11px; border-radius: 10px; font: inherit; font-size: 0.83rem;
+      color: #fff; padding: 9px 11px; border-radius: 10px; font: inherit; font-size: 0.83rem; outline: none;
     }
-    .field textarea { min-height: 75px; resize: vertical; }
-    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--gold); }
+    .field textarea { min-height: 72px; resize: vertical; }
+    .actions { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 10px; }
 
     .product-admin-card {
-      display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center;
+      display: grid; grid-template-columns: 60px 1fr; gap: 12px; align-items: center;
       background: var(--bg-card); border: 1px solid var(--border);
       border-radius: 14px; padding: 11px; margin-bottom: 10px;
     }
-    .product-admin-card img { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; background: #080707; }
+    .product-admin-card img { width: 60px; height: 60px; object-fit: cover; border-radius: 10px; background: #080707; }
     .order-card {
       background: var(--bg-card); border: 1px solid var(--border);
       border-radius: 14px; padding: 14px; margin-bottom: 12px;
@@ -190,10 +196,20 @@
     .order-meta { font-size: 0.8rem; color: var(--muted); line-height: 1.55; margin-bottom: 8px; }
     .order-items { background: #080707; padding: 8px 10px; border-radius: 8px; font-size: 0.78rem; margin-bottom: 10px; }
 
+    /* Promo Code Card */
+    .promo-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 11px 12px; margin-bottom: 9px;
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    }
+    .promo-code-tag {
+      font-family: monospace; font-size: 0.92rem; font-weight: 800;
+      color: var(--gold-light); letter-spacing: 1px;
+    }
+
     .prog-track { width: 100%; height: 6px; background: #080707; border-radius: 10px; overflow: hidden; margin-top: 6px; }
     .prog-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
 
-    /* Mobile Bottom Navigation (< 1080px - Matches Image 1) */
     .mobile-bottom-nav {
       display: none; position: fixed; bottom: 0; left: 0; right: 0;
       background: rgba(10, 8, 8, 0.96); backdrop-filter: blur(12px);
@@ -206,9 +222,7 @@
     }
     .mobile-bottom-nav a.active, .mobile-bottom-nav a:hover { color: var(--gold-light); }
 
-    /* ================= RESPONSIVE BREAKPOINTS ================= */
-    /* Tablet View (700px - 1079px - Matches Image 2) */
-    @media (max-width: 1079px) {
+    @media (max-width: 1120px) {
       .sidebar { display: none; }
       .main-area { margin-left: 0; }
       .mobile-brand { display: flex; }
@@ -218,7 +232,6 @@
       .mobile-bottom-nav { display: flex; }
     }
 
-    /* Mobile View (< 700px - Matches Image 1) */
     @media (max-width: 699px) {
       .rings-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
       .analytics-row { display: none; }
@@ -229,7 +242,7 @@
 </head>
 <body>
 
-  <!-- Lock Screen -->
+  <!-- Owner Lock Screen -->
   <div id="lock-screen">
     <div class="lock-box">
       <img src="Logo.png" alt="GHEPARDO" style="width:64px; margin-bottom:10px;" />
@@ -245,22 +258,22 @@
   </div>
 
   <div class="app-shell">
-    <!-- Desktop Sidebar (Image 3) -->
+    <!-- Desktop Sidebar -->
     <aside class="sidebar">
       <div>
         <div class="sidebar-brand">
           <img src="Logo.png" alt="Logo" />
           <div>
             <h2>GHEPARDO</h2>
-            <span>Command Center</span>
+            <span>Global Command Center</span>
           </div>
         </div>
         <nav class="side-nav">
-          <a href="#hud-section" class="active">📊 Executive Overview</a>
-          <a href="#col-products">📦 Products & Catalogue</a>
-          <a href="#col-orders">🧾 Orders & Delivery</a>
-          <a href="#col-finance">💰 Revenue & Subscribers</a>
-          <a href="products.html">🌐 View Public Store</a>
+          <a href="#hud-section" class="active">📊 Executive Telemetry</a>
+          <a href="#col-products">📦 Products & Studio</a>
+          <a href="#col-orders">🧾 Orders & WhatsApp</a>
+          <a href="#col-finance">💰 Finance & Promo Codes</a>
+          <a href="index.html">🌐 View Live Store</a>
         </nav>
       </div>
       <button id="side-logout" class="btn-outline danger" type="button" style="width:100%; justify-content:center;">Sign out</button>
@@ -277,20 +290,20 @@
           </div>
         </div>
         <div class="desktop-title">
-          <h1>GHEPARDO COMMAND CENTER</h1>
-          <p>Executive Operations, Live Catalogue & Revenue Telemetry</p>
+          <h1>GHEPARDO GLOBAL COMMAND CENTER</h1>
+          <p>Executive Operations, Live Catalogue, Promo Codes & Instant Fulfillment</p>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
           <button id="admin-logout" class="btn-outline danger" type="button" style="display:none;">Sign out</button>
-          <a href="products.html" class="btn-outline">← Live Store</a>
+          <a href="index.html" class="btn-outline">← Live Store</a>
         </div>
       </div>
 
-      <!-- Daily Progress / Telemetry Rings (Matches Image 1 & 2) -->
+      <!-- Telemetry Rings -->
       <section id="hud-section" class="hud-banner">
         <div class="hud-label">
           <span>DAILY ECOSYSTEM TELEMETRY</span>
-          <span id="hud-live-badge" style="color:var(--green);">● LIVE SYNC</span>
+          <span style="color:var(--green);">● LIVE SYNC</span>
         </div>
         <div class="rings-grid">
           <div class="ring-card">
@@ -324,27 +337,27 @@
         </div>
       </section>
 
-      <!-- Tablet & Desktop Analytics Strip (Matches Image 2) -->
+      <!-- Analytics Strip -->
       <section class="analytics-row">
         <div class="panel-box">
           <div class="panel-head">
             <h3>REVENUE VELOCITY (EGP)</h3>
             <strong id="stat-rev-top" style="color:var(--gold-light); font-size:1.1rem;">0 EGP</strong>
           </div>
-          <div class="mini-bars" id="rev-chart">
-            <div class="bar-col"><div class="bar-fill" style="height:25%"></div><span>MON</span></div>
-            <div class="bar-col"><div class="bar-fill" style="height:45%"></div><span>TUE</span></div>
-            <div class="bar-col"><div class="bar-fill" style="height:35%"></div><span>WED</span></div>
-            <div class="bar-col"><div class="bar-fill" style="height:70%"></div><span>THU</span></div>
-            <div class="bar-col"><div class="bar-fill" style="height:55%"></div><span>FRI</span></div>
-            <div class="bar-col"><div class="bar-fill" style="height:85%"></div><span>SAT</span></div>
+          <div class="mini-bars">
+            <div class="bar-col"><div class="bar-fill" style="height:28%"></div><span>MON</span></div>
+            <div class="bar-col"><div class="bar-fill" style="height:48%"></div><span>TUE</span></div>
+            <div class="bar-col"><div class="bar-fill" style="height:38%"></div><span>WED</span></div>
+            <div class="bar-col"><div class="bar-fill" style="height:72%"></div><span>THU</span></div>
+            <div class="bar-col"><div class="bar-fill" style="height:58%"></div><span>FRI</span></div>
+            <div class="bar-col"><div class="bar-fill" style="height:86%"></div><span>SAT</span></div>
             <div class="bar-col"><div class="bar-fill" style="height:100%"></div><span>LIVE</span></div>
           </div>
         </div>
         <div class="panel-box">
           <div class="panel-head">
             <h3>CATALOGUE STATUS</h3>
-            <span class="muted">Live Sync</span>
+            <span class="muted">Real-Time</span>
           </div>
           <div style="margin-bottom:12px;">
             <div style="display:flex; justify-content:space-between; font-size:0.8rem;"><span>Published Assets</span><strong id="cnt-pub" style="color:var(--green);">0</strong></div>
@@ -361,15 +374,15 @@
         </div>
       </section>
 
-      <!-- 3-Column Desktop / 2-Column Tablet / 1-Column Mobile Workspace (Matches Image 3) -->
+      <!-- 3-Column Workspace -->
       <div class="workspace-columns">
-        <!-- Column 1: Product Editor & Catalogue -->
+        <!-- Column 1: Products Studio -->
         <div id="col-products" class="panel-box">
           <div class="panel-head">
             <h3>PRODUCTS & STUDIO</h3>
             <button class="btn" id="seed-catalog-btn" type="button" style="padding:6px 11px; font-size:0.72rem;">+ 24 Catalogue</button>
           </div>
-          <p id="seed-catalog-msg" class="muted" style="margin-bottom:12px;">Add, edit, publish or remove products. Changes reflect immediately on the store.</p>
+          <p id="seed-catalog-msg" class="muted" style="margin-bottom:12px;">Manage store items, covers, files and live status.</p>
 
           <form id="product-form" style="margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--border);">
             <input type="hidden" id="product-id">
@@ -418,27 +431,52 @@
           <div id="products-admin-list"><p class="muted">Loading products...</p></div>
         </div>
 
-        <!-- Column 2: Customer Orders & SOP Fulfillment -->
+        <!-- Column 2: Customer Orders & Instant WhatsApp Delivery -->
         <div id="col-orders" class="panel-box">
           <div class="panel-head">
-            <h3>ORDERS & FULFILLMENT</h3>
-            <span class="badge pending">SOP ACTIVE</span>
+            <h3>ORDERS & DELIVERY</h3>
+            <span class="badge pending">WHATSAPP READY</span>
           </div>
           <div id="orders-list"><p class="muted">Loading orders...</p></div>
         </div>
 
-        <!-- Column 3: Finance & Subscribers -->
+        <!-- Column 3: Finance, Multi-Promo Codes & Subscribers -->
         <div id="col-finance" class="panel-box">
           <div class="panel-head">
-            <h3>FINANCE & AUDIENCE</h3>
+            <h3>FINANCE & PROMO CODES</h3>
             <span style="color:var(--gold-light); font-size:0.75rem;">EGP</span>
           </div>
+
           <div class="order-card" style="background:var(--bg-crimson);">
             <span class="muted">Confirmed Net Revenue</span>
             <div style="font-size:1.75rem; font-weight:800; color:var(--gold-light); margin:4px 0;" id="stat-rev">0 EGP</div>
             <span class="muted" id="pending-rev-note">Pending orders: 0 EGP</span>
           </div>
 
+          <!-- Multi-Promo Code Manager -->
+          <div class="order-card" style="margin-top:14px;">
+            <h4 style="font-family:'Cinzel',serif; color:var(--gold-light); font-size:0.9rem; margin-bottom:10px;">🎟️ PROMO CODES MANAGER</h4>
+            <form id="promo-form">
+              <div class="admin-grid">
+                <div class="field">
+                  <label>Promo Code *</label>
+                  <input type="text" id="promo-code-input" placeholder="e.g. GHEPARDO20" maxlength="25" style="text-transform:uppercase; font-family:monospace; font-weight:700;" required />
+                </div>
+                <div class="field">
+                  <label>Discount (%) *</label>
+                  <input type="number" id="promo-discount-input" placeholder="e.g. 20" min="1" max="100" required />
+                </div>
+              </div>
+              <button type="submit" id="add-promo-btn" class="btn" style="width:100%;">+ Add & Activate Promo Code</button>
+              <p id="promo-msg" class="muted" style="margin-top:6px;"></p>
+            </form>
+
+            <div id="promo-list" style="margin-top:14px;">
+              <p class="muted">Loading promo codes...</p>
+            </div>
+          </div>
+
+          <!-- Subscribers -->
           <h4 style="font-family:'Cinzel',serif; color:var(--gold-light); font-size:0.9rem; margin:16px 0 10px;">NEWSLETTER SUBSCRIBERS</h4>
           <div id="subs-list" class="order-card muted">Loading subscribers...</div>
         </div>
@@ -446,7 +484,7 @@
     </main>
   </div>
 
-  <!-- Mobile Bottom Navigation (Image 1) -->
+  <!-- Mobile Bottom Navigation -->
   <nav class="mobile-bottom-nav">
     <a href="#hud-section" class="active"><span>🏠</span>Overview</a>
     <a href="#col-products"><span>📦</span>Products</a>
@@ -480,8 +518,9 @@
     const logoutButton = document.getElementById("admin-logout");
     const sideLogout = document.getElementById("side-logout");
 
-    let stopOrders = null, stopSubscribers = null, stopProducts = null;
+    let stopOrders = null, stopSubscribers = null, stopProducts = null, stopCoupons = null;
     let cachedProducts = {};
+    let cachedOrders = {};
     let latestOrdersForStats = [];
     let latestSubscribersForStats = {};
 
@@ -513,6 +552,14 @@
       return String(value ?? "").replace(/[&<>"']/g, char => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
       })[char]);
+    }
+
+    function formatWhatsAppPhone(contact) {
+      const digits = String(contact || "").replace(/\D/g, "");
+      if (!digits) return "";
+      if (digits.startsWith("01") && digits.length === 11) return "20" + digits.slice(1);
+      if (digits.startsWith("20") && digits.length >= 12) return digits;
+      return digits;
     }
 
     const ghepardoCatalog = [
@@ -570,7 +617,8 @@
       if (stopOrders) stopOrders();
       if (stopSubscribers) stopSubscribers();
       if (stopProducts) stopProducts();
-      stopOrders = null; stopSubscribers = null; stopProducts = null;
+      if (stopCoupons) stopCoupons();
+      stopOrders = null; stopSubscribers = null; stopProducts = null; stopCoupons = null;
     }
 
     loginForm.addEventListener("submit", async (event) => {
@@ -593,6 +641,8 @@
 
     function startDashboard() {
       stopDashboard();
+
+      // 1. Products Listener
       stopProducts = onValue(ref(db, "products"), snapshot => {
         cachedProducts = snapshot.val() || {};
         renderAdminProducts();
@@ -600,8 +650,41 @@
         document.getElementById("products-admin-list").textContent = "Could not load products: " + error.message;
       });
 
+      // 2. Promo Codes Listener (Multi-Coupon Support)
+      stopCoupons = onValue(ref(db, "coupons"), snapshot => {
+        const data = snapshot.val() || {};
+        const rows = Object.entries(data).sort((a, b) => (b[1].createdAt || 0) - (a[1].createdAt || 0));
+        const list = document.getElementById("promo-list");
+        if (!rows.length) {
+          list.innerHTML = '<p class="muted">No promo codes yet. Add your first code above.</p>';
+          return;
+        }
+        list.innerHTML = rows.map(([code, item]) => {
+          const active = item.active !== false;
+          return `
+            <div class="promo-card">
+              <div>
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                  <span class="promo-code-tag">${escapeHTML(code)}</span>
+                  <span class="badge ${active ? 'confirmed' : 'paused'}">${active ? 'ACTIVE' : 'PAUSED'}</span>
+                </div>
+                <span class="muted">Discount: <strong style="color:var(--gold-light);">${Number(item.discount || 0)}% OFF</strong></span>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button class="btn-outline" data-toggle-promo="${escapeHTML(code)}" data-promo-state="${active ? '1' : '0'}">${active ? 'Pause' : 'Activate'}</button>
+                <button class="btn-outline danger" data-delete-promo="${escapeHTML(code)}">✕</button>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }, error => {
+        document.getElementById("promo-list").textContent = "Could not load promo codes: " + error.message;
+      });
+
+      // 3. Orders Listener
       stopOrders = onValue(ref(db, "orders"), snapshot => {
         const data = snapshot.val() || {};
+        cachedOrders = data;
         const orders = Object.entries(data).map(([id, order]) => ({ id, ...order }))
           .sort((a, b) => (b.timestampMs || 0) - (a.timestampMs || 0));
         latestOrdersForStats = orders;
@@ -627,15 +710,22 @@
           const items = Array.isArray(order.items) ? order.items : Object.values(order.items || {});
           const itemHtml = items.map(item => `• ${escapeHTML(item.title)} — <b>${escapeHTML(item.price)} EGP</b>`).join("<br>");
           const status = order.status === "confirmed" ? "confirmed" : "pending";
+          const promoTag = order.promoCode ? `<br>🎟️ Promo: <b style="color:var(--green);">${escapeHTML(order.promoCode)} (-${Number(order.discountPercent || 0)}%)</b>` : "";
+          const actionBtns = order.status === "confirmed" && order.downloadToken
+            ? `<button class="btn-wa" data-wa-deliver="${escapeHTML(order.id)}">📲 Send via WhatsApp</button>
+               <button class="btn-outline" data-copy-link="${escapeHTML(order.downloadToken)}">Copy link</button>`
+            : `<button class="btn" data-confirm="${escapeHTML(order.id)}">✓ Confirm & release</button>`;
+
           return `<div class="order-card">
             <div class="order-top"><strong>${escapeHTML(order.customerName || "Customer")}</strong><span class="badge ${status}">${escapeHTML(order.status || "pending")}</span></div>
-            <div class="order-meta">📞 Contact: <b>${escapeHTML(order.contact)}</b><br>💳 Ref: <b>${escapeHTML(order.paymentReference)}</b><br>💰 Total: <b style="color:var(--gold-light);">${escapeHTML(order.totalEGP)} EGP</b></div>
+            <div class="order-meta">📞 Contact: <b>${escapeHTML(order.contact)}</b><br>💳 Ref: <b>${escapeHTML(order.paymentReference)}</b>${promoTag}<br>💰 Total: <b style="color:var(--gold-light);">${escapeHTML(order.totalEGP)} EGP</b></div>
             <div class="order-items">${itemHtml}</div>
-            <div class="actions">${order.status === "confirmed" && order.downloadToken ? `<button class="btn" data-copy-link="${escapeHTML(order.downloadToken)}">Copy download link</button>` : `<button class="btn" data-confirm="${escapeHTML(order.id)}">✓ Confirm & release</button>`}<button class="btn-outline danger" data-delete="${escapeHTML(order.id)}">Delete</button></div>
+            <div class="actions">${actionBtns}<button class="btn-outline danger" data-delete="${escapeHTML(order.id)}">Delete</button></div>
           </div>`;
         }).join("");
       }, error => { document.getElementById("orders-list").textContent = "Could not load orders: " + error.message; });
 
+      // 4. Subscribers Listener
       stopSubscribers = onValue(ref(db, "subscribers"), snapshot => {
         const data = snapshot.val() || {}, subscribers = Object.values(data);
         latestSubscribersForStats = data;
@@ -647,12 +737,75 @@
       }, error => { document.getElementById("subs-list").textContent = "Could not load subscribers: " + error.message; });
     }
 
+    // Add Promo Code Handler
+    document.getElementById("promo-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const codeInput = document.getElementById("promo-code-input");
+      const discInput = document.getElementById("promo-discount-input");
+      const msg = document.getElementById("promo-msg");
+      const code = codeInput.value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "");
+      const discount = Number(discInput.value);
+
+      if (!code || discount < 1 || discount > 100) {
+        msg.textContent = "Enter a valid code (letters/numbers) and discount (1-100%).";
+        return;
+      }
+      try {
+        await set(ref(db, "coupons/" + code), {
+          code,
+          discount,
+          active: true,
+          createdAt: Date.now()
+        });
+        codeInput.value = "";
+        discInput.value = "";
+        msg.textContent = `✓ Promo code ${code} (${discount}% OFF) is now LIVE!`;
+      } catch (err) {
+        msg.textContent = "Error saving promo code: " + err.message;
+      }
+    });
+
+    // Toggle / Delete Promo Code Handler
+    document.getElementById("promo-list").addEventListener("click", async event => {
+      const toggleCode = event.target.closest("[data-toggle-promo]")?.dataset.togglePromo;
+      const currentState = event.target.closest("[data-toggle-promo]")?.dataset.promoState;
+      const deleteCode = event.target.closest("[data-delete-promo]")?.dataset.deletePromo;
+
+      try {
+        if (toggleCode) {
+          await update(ref(db, "coupons/" + toggleCode), { active: currentState !== "1" });
+        }
+        if (deleteCode && confirm(`Delete promo code ${deleteCode}?`)) {
+          await remove(ref(db, "coupons/" + deleteCode));
+        }
+      } catch (err) {
+        alert("Promo action failed: " + err.message);
+      }
+    });
+
+    // Orders Actions (Confirm, WhatsApp Direct Delivery, Copy Link, Delete)
     document.getElementById("orders-list").addEventListener("click", async event => {
       const confirmId = event.target.closest("[data-confirm]")?.dataset.confirm;
       const deleteId = event.target.closest("[data-delete]")?.dataset.delete;
       const copyToken = event.target.closest("[data-copy-link]")?.dataset.copyLink;
+      const waOrderId = event.target.closest("[data-wa-deliver]")?.dataset.waDeliver;
+
       try {
         if (confirmId) await confirmAndReleaseDownloads(confirmId);
+        if (waOrderId) {
+          const order = cachedOrders[waOrderId];
+          if (!order || !order.downloadToken) return;
+          const url = new URL("download.html?token=" + order.downloadToken, window.location.href).href;
+          const phone = formatWhatsAppPhone(order.contact);
+          const text = encodeURIComponent(
+            `أهلاً بك ${order.customerName || ''} في عالم GHEPARDO ✨\n\nتم تأكيد الدفع بنجاح لطلبك بقيمة (${order.totalEGP} EGP).\n\n📥 رابط التحميل الآمن الخاص بملفاتك (صالح لمدة 23 ساعة):\n${url}\n\nنتمنى لك تجربة استثنائية!`
+          );
+          if (phone) {
+            window.open(`https://wa.me/${phone}?text=${text}`, "_blank");
+          } else {
+            window.open(`https://wa.me/?text=${text}`, "_blank");
+          }
+        }
         if (deleteId && confirm("Delete this order record?")) {
           const orderSnap = await get(ref(db, "orders/" + deleteId));
           const oldOrder = orderSnap.val();
@@ -832,7 +985,7 @@
         ["customerOrders/" + downloadToken + "/expiresAt"]: now + 23 * 60 * 60 * 1000
       });
       const customerUrl = new URL("download.html?token=" + downloadToken, window.location.href).href;
-      try { await navigator.clipboard.writeText(customerUrl); alert("Payment confirmed. Link copied (valid 23h)."); }
+      try { await navigator.clipboard.writeText(customerUrl); alert("Payment confirmed! Click 'Send via WhatsApp' to message the customer directly."); }
       catch (_) { alert("Payment confirmed (valid 23h). Link: " + customerUrl); }
     }
 
