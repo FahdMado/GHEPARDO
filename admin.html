@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GHEPARDO | Global Command Center</title>
+  <meta name="description" content="Private GHEPARDO operations dashboard for products, customers, revenue and delivery." />
+  <meta name="robots" content="noindex,nofollow" />
   <link rel="icon" type="image/png" href="Logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -291,7 +293,7 @@
         </div>
         <div class="desktop-title">
           <h1>GHEPARDO GLOBAL COMMAND CENTER</h1>
-          <p>Executive Operations, Live Catalogue, Promo Codes & Instant Fulfillment</p>
+          <p>One control room for products, customers, revenue and digital fulfillment.</p>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
           <button id="admin-logout" class="btn-outline danger" type="button" style="display:none;">Sign out</button>
@@ -341,18 +343,10 @@
       <section class="analytics-row">
         <div class="panel-box">
           <div class="panel-head">
-            <h3>REVENUE VELOCITY (EGP)</h3>
+            <h3>LAST 7 DAYS • CONFIRMED SALES (EGP)</h3>
             <strong id="stat-rev-top" style="color:var(--gold-light); font-size:1.1rem;">0 EGP</strong>
           </div>
-          <div class="mini-bars">
-            <div class="bar-col"><div class="bar-fill" style="height:28%"></div><span>MON</span></div>
-            <div class="bar-col"><div class="bar-fill" style="height:48%"></div><span>TUE</span></div>
-            <div class="bar-col"><div class="bar-fill" style="height:38%"></div><span>WED</span></div>
-            <div class="bar-col"><div class="bar-fill" style="height:72%"></div><span>THU</span></div>
-            <div class="bar-col"><div class="bar-fill" style="height:58%"></div><span>FRI</span></div>
-            <div class="bar-col"><div class="bar-fill" style="height:86%"></div><span>SAT</span></div>
-            <div class="bar-col"><div class="bar-fill" style="height:100%"></div><span>LIVE</span></div>
-          </div>
+          <div class="mini-bars" id="revenue-bars" aria-label="Confirmed sales over the last seven days"><p class="muted">Waiting for order data…</p></div><p id="revenue-chart-caption" class="muted" style="font-size:.7rem;margin-top:8px;">Confirmed orders only. Values update from Firebase.</p>
         </div>
         <div class="panel-box">
           <div class="panel-head">
@@ -428,7 +422,7 @@
             <p id="product-form-msg" class="muted" style="margin-top:8px;"></p>
           </form>
 
-          <div id="products-admin-list"><p class="muted">Loading products...</p></div>
+          <div class="admin-grid" style="margin:12px 0;"><div class="field"><label for="product-search">Search catalogue</label><input id="product-search" type="search" placeholder="Search product name or category"></div><div class="field"><label for="product-status-filter">Filter by status</label><select id="product-status-filter"><option value="all">All statuses</option><option value="published">Published</option><option value="coming_soon">Coming soon</option><option value="draft">Draft</option></select></div></div><div id="products-admin-list"><p class="muted">Loading products...</p></div>
         </div>
 
         <!-- Column 2: Customer Orders & Instant WhatsApp Delivery -->
@@ -448,11 +442,12 @@
           </div>
 
           <div class="order-card" style="background:var(--bg-crimson);">
-            <span class="muted">Confirmed Net Revenue</span>
+            <span class="muted">Confirmed Net Revenue • All Time</span>
             <div style="font-size:1.75rem; font-weight:800; color:var(--gold-light); margin:4px 0;" id="stat-rev">0 EGP</div>
             <span class="muted" id="pending-rev-note">Pending orders: 0 EGP</span>
           </div>
-
+          <div class="admin-grid" style="margin-top:12px;"><div class="order-card"><span class="muted">Confirmed Today</span><strong id="stat-rev-today" style="display:block;color:var(--gold-light);font-size:1.15rem;margin-top:5px;">0 EGP</strong></div><div class="order-card"><span class="muted">Confirmed • 7 Days</span><strong id="stat-rev-7d" style="display:block;color:var(--gold-light);font-size:1.15rem;margin-top:5px;">0 EGP</strong></div></div>
+          <div class="order-card" style="margin-top:10px;"><span class="muted">Pending orders</span><strong id="stat-pending-orders" style="display:block;color:var(--gold-light);font-size:1.15rem;margin-top:5px;">0</strong></div>
           <!-- Multi-Promo Code Manager -->
           <div class="order-card" style="margin-top:14px;">
             <h4 style="font-family:'Cinzel',serif; color:var(--gold-light); font-size:0.9rem; margin-bottom:10px;">🎟️ PROMO CODES MANAGER</h4>
@@ -464,7 +459,7 @@
                 </div>
                 <div class="field">
                   <label>Discount (%) *</label>
-                  <input type="number" id="promo-discount-input" placeholder="e.g. 20" min="1" max="100" required />
+                  <input type="number" id="promo-discount-input" placeholder="e.g. 20" min="1" max="50" required />
                 </div>
               </div>
               <button type="submit" id="add-promo-btn" class="btn" style="width:100%;">+ Add & Activate Promo Code</button>
@@ -521,6 +516,8 @@
     let stopOrders = null, stopSubscribers = null, stopProducts = null, stopCoupons = null;
     let cachedProducts = {};
     let cachedOrders = {};
+    let productSearchTerm = "";
+    let productStatusFilter = "all";
     let latestOrdersForStats = [];
     let latestSubscribersForStats = {};
 
@@ -546,6 +543,23 @@
         buyers: buyers.size,
         updatedAt: Date.now()
       }).catch(error => console.warn("Could not refresh public GHEPARDO stats:", error));
+    }
+
+    function renderRevenueBars(orders) {
+      const host = document.getElementById("revenue-bars");
+      if (!host) return;
+      const today = new Date();
+      const days = [];
+      for (let offset = 6; offset >= 0; offset--) {
+        const day = new Date(today.getFullYear(), today.getMonth(), today.getDate() - offset);
+        const key = day.toDateString();
+        const amount = orders.filter(o => o.status === "confirmed" && new Date(Number(o.timestampMs || 0)).toDateString() === key).reduce((sum,o) => sum + Number(o.totalEGP || 0), 0);
+        days.push({label:day.toLocaleDateString("en",{weekday:"short"}),amount});
+      }
+      const max = Math.max(1, ...days.map(d => d.amount));
+      host.innerHTML = days.map(d => '<div class="bar-col" title="' + d.label + ': ' + d.amount.toLocaleString() + ' EGP"><div class="bar-fill" style="height:' + Math.max(3,d.amount/max*100) + '%"></div><span>' + d.label + '</span></div>').join("");
+      const caption = document.getElementById("revenue-chart-caption");
+      if (caption) caption.textContent = "7-day confirmed revenue: " + days.reduce((sum,d)=>sum+d.amount,0).toLocaleString() + " EGP • Live database values.";
     }
 
     function escapeHTML(value) {
@@ -694,6 +708,14 @@
         const rev = confirmedOrders.reduce((sum, o) => sum + Number(o.totalEGP || 0), 0);
         const pendingRev = orders.filter(o => o.status !== "confirmed").reduce((sum, o) => sum + Number(o.totalEGP || 0), 0);
         const fulfillPct = orders.length ? Math.round((confirmedOrders.length / orders.length) * 100) : 0;
+        const dayStart = new Date(); dayStart.setHours(0,0,0,0);
+        const todayRevenue = confirmedOrders.filter(o => Number(o.timestampMs || 0) >= dayStart.getTime()).reduce((sum,o)=>sum+Number(o.totalEGP||0),0);
+        const sevenDaysAgo = Date.now() - 7*24*60*60*1000;
+        const sevenDayRevenue = confirmedOrders.filter(o => Number(o.timestampMs || 0) >= sevenDaysAgo).reduce((sum,o)=>sum+Number(o.totalEGP||0),0);
+        document.getElementById("stat-rev-today").textContent = todayRevenue.toLocaleString() + " EGP";
+        document.getElementById("stat-rev-7d").textContent = sevenDayRevenue.toLocaleString() + " EGP";
+        document.getElementById("stat-pending-orders").textContent = orders.filter(o => o.status !== "confirmed").length;
+        renderRevenueBars(orders);
 
         document.getElementById("stat-orders").textContent = orders.length;
         document.getElementById("stat-confirmed-pct").textContent = fulfillPct + "%";
@@ -718,7 +740,7 @@
 
           return `<div class="order-card">
             <div class="order-top"><strong>${escapeHTML(order.customerName || "Customer")}</strong><span class="badge ${status}">${escapeHTML(order.status || "pending")}</span></div>
-            <div class="order-meta">📞 Contact: <b>${escapeHTML(order.contact)}</b><br>💳 Ref: <b>${escapeHTML(order.paymentReference)}</b>${promoTag}<br>💰 Total: <b style="color:var(--gold-light);">${escapeHTML(order.totalEGP)} EGP</b></div>
+            <div class="order-meta">📞 Contact: <b>${escapeHTML(order.contact)}</b><br>💳 Method: <b>${escapeHTML(order.paymentMethod || "Not recorded")}</b><br>🔎 Ref: <b>${escapeHTML(order.paymentReference)}</b>${promoTag}<br>💰 Total: <b style="color:var(--gold-light);">${escapeHTML(order.totalEGP)} EGP</b></div>
             <div class="order-items">${itemHtml}</div>
             <div class="actions">${actionBtns}<button class="btn-outline danger" data-delete="${escapeHTML(order.id)}">Delete</button></div>
           </div>`;
@@ -746,8 +768,8 @@
       const code = codeInput.value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "");
       const discount = Number(discInput.value);
 
-      if (!code || discount < 1 || discount > 100) {
-        msg.textContent = "Enter a valid code (letters/numbers) and discount (1-100%).";
+      if (!code || discount < 1 || discount > 50) {
+        msg.textContent = "Enter a valid code (letters/numbers) and discount (1-50%).";
         return;
       }
       try {
@@ -809,7 +831,10 @@
         if (deleteId && confirm("Delete this order record?")) {
           const orderSnap = await get(ref(db, "orders/" + deleteId));
           const oldOrder = orderSnap.val();
-          if (oldOrder?.downloadToken) await remove(ref(db, "downloads/" + oldOrder.downloadToken));
+          if (oldOrder?.downloadToken) {
+            await remove(ref(db, "downloads/" + oldOrder.downloadToken));
+            await remove(ref(db, "customerOrders/" + oldOrder.downloadToken));
+          }
           await remove(ref(db, "orders/" + deleteId));
         }
         if (copyToken) {
@@ -821,11 +846,18 @@
     });
 
     function renderAdminProducts() {
-      const list = document.getElementById("products-admin-list"), rows = Object.entries(cachedProducts);
-      const total = rows.length;
-      const pub = rows.filter(([,p]) => p.status === "published").length;
-      const soon = rows.filter(([,p]) => p.status === "coming_soon").length;
-      const draft = rows.filter(([,p]) => !p.status || p.status === "draft").length;
+      const list = document.getElementById("products-admin-list");
+      const allRows = Object.entries(cachedProducts);
+      const rows = allRows.filter(([id,p]) => {
+        const q = productSearchTerm.toLowerCase();
+        const textMatch = !q || [p.title,p.category,id].some(v => String(v || "").toLowerCase().includes(q));
+        const statusMatch = productStatusFilter === "all" || (p.status || "draft") === productStatusFilter;
+        return textMatch && statusMatch;
+      });
+      const total = allRows.length;
+      const pub = allRows.filter(([,p]) => p.status === "published").length;
+      const soon = allRows.filter(([,p]) => p.status === "coming_soon").length;
+      const draft = allRows.filter(([,p]) => !p.status || p.status === "draft").length;
 
       document.getElementById("stat-products").textContent = total;
       setRing("ring-products", Math.min(100, (total / 25) * 100));
@@ -836,11 +868,14 @@
       document.getElementById("bar-soon").style.width = (total ? (soon / total * 100) : 0) + "%";
       document.getElementById("bar-draft").style.width = (total ? (draft / total * 100) : 0) + "%";
 
-      if (!rows.length) { list.innerHTML = '<div class="order-card muted">No products yet. Add your first product above.</div>'; return; }
+      if (!rows.length) { list.innerHTML = '<div class="order-card muted">' + (allRows.length ? "No products match your search or filter." : "No products yet. Add your first product above.") + '</div>'; return; }
       list.innerHTML = rows.map(([id, p]) =>
-        '<div class="product-admin-card"><img src="' + escapeHTML(p.imageData || p.imageUrl || "Logo.png") + '" alt=""><div><div class="order-top"><strong>' + escapeHTML(p.title) + '</strong><span class="badge ' + (p.status === "published" ? "confirmed" : "pending") + '">' + escapeHTML(p.status || "draft") + '</span></div><div class="muted">' + escapeHTML(p.category) + ' · ' + Number(p.price).toLocaleString() + ' EGP · Stock: ' + Number(p.stock || 0) + '</div><div class="actions"><button class="btn" data-edit-product="' + escapeHTML(id) + '">Edit</button><button class="btn-outline" data-download-product="' + escapeHTML(id) + '">File</button><button class="btn-outline danger" data-delete-product="' + escapeHTML(id) + '">Delete</button></div></div></div>'
+        '<div class="product-admin-card"><img src="' + escapeHTML(p.imageData || p.imageUrl || "Logo.png") + '" alt=""><div><div class="order-top"><strong>' + escapeHTML(p.title) + '</strong><span class="badge ' + (p.status === "published" ? "confirmed" : "pending") + '">' + escapeHTML(p.status || "draft") + '</span></div><div class="muted">' + escapeHTML(p.category) + ' · ' + Number(p.price).toLocaleString() + ' EGP · Stock: ' + Number(p.stock || 0) + '</div><div class="actions"><button class="btn" data-edit-product="' + escapeHTML(id) + '">Edit</button><button class="btn-outline" data-download-product="' + escapeHTML(id) + '">File</button><button class="btn-outline" data-duplicate-product="' + escapeHTML(id) + '">Duplicate</button><a class="btn-outline" href="products.html#products" target="_blank" rel="noopener">Store preview</a><button class="btn-outline danger" data-delete-product="' + escapeHTML(id) + '">Delete</button></div></div></div>'
       ).join("");
     }
+
+    document.getElementById("product-search").addEventListener("input", event => { productSearchTerm = event.target.value.trim(); renderAdminProducts(); });
+    document.getElementById("product-status-filter").addEventListener("change", event => { productStatusFilter = event.target.value; renderAdminProducts(); });
 
     const productForm = document.getElementById("product-form");
     function clearProductForm() {
@@ -856,7 +891,15 @@
       const editId = event.target.closest("[data-edit-product]")?.dataset.editProduct;
       const deleteId = event.target.closest("[data-delete-product]")?.dataset.deleteProduct;
       const downloadId = event.target.closest("[data-download-product]")?.dataset.downloadProduct;
+      const duplicateId = event.target.closest("[data-duplicate-product]")?.dataset.duplicateProduct;
       if (downloadId) { try { await downloadProductFile(downloadId); } catch (error) { alert(error.message || "Could not download file."); } }
+      if (duplicateId) {
+        const source = cachedProducts[duplicateId];
+        if (!source) return;
+        const copyId = push(ref(db, "products")).key;
+        await set(ref(db, "products/" + copyId), {...source, title: String(source.title || "Product") + " (Copy)", status: "draft", badge: "DRAFT COPY", updatedAt: Date.now()});
+        document.getElementById("product-form-msg").textContent = "Draft copy created. Upload its own delivery file before publishing.";
+      }
       if (editId) {
         const p = cachedProducts[editId]; if (!p) return;
         document.getElementById("product-id").value = editId;
@@ -911,12 +954,13 @@
           badge: document.getElementById("product-badge").value.trim(),
           stock: Number(document.getElementById("product-stock").value),
           imageData: imageData || null,
-          imageUrl: imageUrl || "",
+          imageUrl: imageUrl || existing.imageUrl || "",
           emoji: existing.emoji || "✦",
           updatedAt: Date.now()
         };
         await set(ref(db, "products/" + id), product);
         const digitalFile = document.getElementById("product-download-file").files[0];
+        if (digitalFile && digitalFile.size > 3 * 1024 * 1024) throw Error("Digital file must be <= 3 MB.");
         const downloadUrl = document.getElementById("product-download-url").value.trim();
         if (digitalFile) {
           if (digitalFile.size > 3 * 1024 * 1024) throw Error("Digital file must be <= 3 MB.");
