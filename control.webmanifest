@@ -1,0 +1,19 @@
+{
+  "id": "/GHEPARDO/control-app",
+  "name": "GHEPARDO CONTROL",
+  "short_name": "G CONTROL",
+  "description": "Private GHEPARDO management and operations app",
+  "start_url": "/GHEPARDO/admin.html?source=pwa",
+  "scope": "/GHEPARDO/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050404",
+  "theme_color": "#050404",
+  "icons": [
+    {
+      "src": "/GHEPARDO/Logo.png",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
