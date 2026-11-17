@@ -1,9 +1,9 @@
 {
   "rules": {
     "orders": {
-      ".read": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
+      ".read": "(auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('orders').child('view').val() === true)",
       "$orderId": {
-        ".write": "(!data.exists() && newData.exists()) || (auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42')",
+        ".write": "(!data.exists() && newData.exists()) || (auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('orders').child('edit').val() === true)",
         ".validate": "newData.hasChildren(['customerName','contact','paymentReference','items','totalEGP','status','timestampMs'])",
         "customerName": {
           ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 100"
@@ -36,7 +36,7 @@
           ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 500000"
         },
         "status": {
-          ".validate": "newData.val() === 'pending' || (auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' && newData.val() === 'confirmed')"
+          ".validate": "newData.val() === 'pending' || ((auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('orders').child('approve').val() === true) && newData.val() === 'confirmed')"
         },
         "timestampMs": {
           ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 60000"
@@ -62,9 +62,9 @@
       }
     },
     "subscribers": {
-      ".read": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
+      ".read": "(auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('customers').child('view').val() === true)",
       "$subscriberId": {
-        ".write": "(!data.exists() && newData.exists()) || (auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42')",
+        ".write": "(!data.exists() && newData.exists()) || (auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('customers').child('edit').val() === true)",
         ".validate": "newData.hasChildren(['email','timestampMs'])",
         "email": {
           ".validate": "newData.isString() && newData.val().length >= 5 && newData.val().length <= 254 && newData.val().matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+[.][A-Za-z]{2,}$/)"
@@ -79,7 +79,7 @@
     },
     "products": {
       ".read": true,
-      ".write": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
+      ".write": "(auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('products').child('edit').val() === true)",
       "$productId": {
         ".validate": "newData.hasChildren(['title','description','price','category','status','stock','updatedAt'])",
         "title": {
@@ -121,20 +121,20 @@
       }
     },
     "productFiles": {
-      ".read": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
-      ".write": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'"
+      ".read": "(auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('products').child('files').val() === true)",
+      ".write": "(auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('products').child('files').val() === true)"
     },
     "downloads": {
       "$token": {
         ".read": "!data.exists() || data.child('expiresAt').val() > now",
-        ".write": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
+        ".write": "(auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('orders').child('delivery').val() === true)",
         ".validate": "newData.hasChildren(['files','createdAt','expiresAt'])"
       }
     },
     "customerOrders": {
       "$token": {
         ".read": "data.exists()",
-        ".write": "(!data.exists() && newData.exists()) || (auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42')",
+        ".write": "(!data.exists() && newData.exists()) || (auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('orders').child('delivery').val() === true)",
         ".validate": "newData.hasChildren(['items','totalEGP','status','createdAt','expiresAt','downloadToken'])",
         "items": {
           ".validate": "newData.hasChildren()"
@@ -143,7 +143,7 @@
           ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 500000"
         },
         "status": {
-          ".validate": "newData.val() === 'pending' || (auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' && newData.val() === 'confirmed')"
+          ".validate": "newData.val() === 'pending' || ((auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('orders').child('approve').val() === true) && newData.val() === 'confirmed')"
         },
         "createdAt": {
           ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= now + 60000"
@@ -161,7 +161,7 @@
     },
     "publicStats": {
       ".read": true,
-      ".write": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
+      ".write": "(auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('finance').child('edit').val() === true)",
       ".validate": "newData.hasChildren(['trustedUsers','buyers','updatedAt'])",
       "trustedUsers": {
         ".validate": "newData.isNumber() && newData.val() >= 0"
@@ -178,7 +178,7 @@
     },
     "coupons": {
       ".read": true,
-      ".write": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
+      ".write": "(auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth != null && root.child('staff').child(auth.uid).child('active').val() === true && root.child('staff').child(auth.uid).child('permissions').child('marketing').child('edit').val() === true)",
       "$code": {
         ".validate": "newData.hasChildren(['code','discount','active','createdAt'])",
         "code": {
@@ -196,6 +196,24 @@
         "$other": {
           ".validate": false
         }
+      }
+    },
+    "staff": {
+      ".read": "auth != null && (auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42' || auth.uid === $uid)",
+      "$uid": {
+        ".write": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'"
+      }
+    },
+    "usernames": {
+      ".read": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
+      "$username": {
+        ".write": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'"
+      }
+    },
+    "staffAudit": {
+      ".read": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'",
+      "$auditId": {
+        ".write": "auth != null && auth.uid === 'pDQty2R4KLdv3PBahimLYsG30S42'"
       }
     }
   }
