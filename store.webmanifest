@@ -1,0 +1,19 @@
+{
+  "id": "/GHEPARDO/store-app",
+  "name": "GHEPARDO STORE",
+  "short_name": "G STORE",
+  "description": "GHEPARDO digital products and customer store",
+  "start_url": "/GHEPARDO/products.html?source=pwa",
+  "scope": "/GHEPARDO/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#070606",
+  "theme_color": "#080808",
+  "icons": [
+    {
+      "src": "/GHEPARDO/Logo.png",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
