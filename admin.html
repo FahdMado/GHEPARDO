@@ -240,9 +240,27 @@
       .workspace-columns { grid-template-columns: 1fr; }
       .admin-grid { grid-template-columns: 1fr; }
     }
+ 
+    .nav-count{margin-left:auto;min-width:22px;padding:2px 7px;border-radius:20px;background:rgba(255,107,107,.18);color:#ff9b9b;text-align:center;font-size:.68rem}
+    .studio-subhead{font-family:'Cinzel',serif;color:var(--gold-light);font-size:.78rem;letter-spacing:1px;margin:12px 0}
+    .order-alert-head{display:flex;justify-content:space-between;align-items:center;margin:8px 0 6px}
+    .ops-toast{position:fixed;right:22px;top:22px;z-index:10001;display:flex;flex-direction:column;gap:6px;min-width:260px;max-width:min(390px,calc(100vw - 28px));padding:16px 18px;border:1px solid var(--gold);border-radius:16px;background:#170e0b;box-shadow:0 18px 55px #000b;opacity:0;transform:translateY(-12px);pointer-events:none;transition:.25s}
+    .ops-toast.show{opacity:1;transform:translateY(0);pointer-events:auto}
+    .ops-toast strong{color:var(--gold-light);font-size:.82rem}.ops-toast span{font-size:.8rem}.ops-toast a{color:var(--gold-light);font-size:.78rem;text-decoration:none}
+    .page-dashboard #col-products,.page-dashboard #col-orders{display:none!important}
+    .page-dashboard .workspace-columns{display:block}
+    .page-products #hud-section,.page-products .analytics-row,.page-products #col-orders,.page-products #col-finance{display:none!important}
+    .page-products .workspace-columns{display:block}
+    .page-products #col-products{width:100%;max-width:1100px;margin:0 auto}
+    .page-orders #hud-section,.page-orders .analytics-row,.page-orders #col-products,.page-orders #col-finance{display:none!important}
+    .page-orders .workspace-columns{display:block}
+    .page-orders #col-orders{width:100%;max-width:1100px;margin:0 auto}
+    .page-dashboard .mobile-bottom-nav a[href*="products"],.page-dashboard .mobile-bottom-nav a[href*="orders"]{display:none}
+    @media(max-width:699px){.ops-toast{right:12px;top:12px}.main-area{padding-left:14px;padding-right:14px}}
+
   </style>
 </head>
-<body>
+<body class="page-dashboard">
 
   <!-- Owner Lock Screen -->
   <div id="lock-screen">
@@ -271,13 +289,12 @@
           </div>
         </div>
         <nav class="side-nav">
-          <a href="#hud-section" class="active">📊 Executive Telemetry</a>
-          <a href="#col-products">📦 Products & Studio</a>
-          <a href="#col-orders">🧾 Orders & WhatsApp</a>
-          <a href="#col-finance">💰 Finance & Promo Codes</a>
+          <a href="admin.html">📊 Operations Dashboard</a>
+          <a href="admin-products.html">📦 Product Studio</a>
+          <a href="admin-orders.html">🧾 Orders & Alerts <span id="nav-pending-count" class="nav-count">0</span></a>
+          <a href="admin.html#col-finance">💰 Finance & Growth</a>
           <a href="index.html">🌐 View Live Store</a>
-        </nav>
-      </div>
+        </nav>      </div>
       <button id="side-logout" class="btn-outline danger" type="button" style="width:100%; justify-content:center;">Sign out</button>
     </aside>
 
@@ -293,14 +310,15 @@
         </div>
         <div class="desktop-title">
           <h1>GHEPARDO GLOBAL COMMAND CENTER</h1>
-          <p>One control room for products, customers, revenue and digital fulfillment.</p>
+          <p>Executive overview · live performance · operational health.</p>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
           <button id="admin-logout" class="btn-outline danger" type="button" style="display:none;">Sign out</button>
-          <a href="index.html" class="btn-outline">← Live Store</a>
+          <button id="enable-notifications" class="btn-outline" type="button">🔔 Enable alerts</button><a href="index.html" class="btn-outline">← Live Store</a>
         </div>
       </div>
 
+      <div id="ops-toast" class="ops-toast" role="status" aria-live="polite"></div>
       <!-- Telemetry Rings -->
       <section id="hud-section" class="hud-banner">
         <div class="hud-label">
@@ -378,6 +396,7 @@
           </div>
           <p id="seed-catalog-msg" class="muted" style="margin-bottom:12px;">Manage store items, covers, files and live status.</p>
 
+          <h4 class="studio-subhead">01 / CREATE OR EDIT PRODUCT</h4>
           <form id="product-form" style="margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--border);">
             <input type="hidden" id="product-id">
             <div class="admin-grid">
@@ -422,7 +441,7 @@
             <p id="product-form-msg" class="muted" style="margin-top:8px;"></p>
           </form>
 
-          <div class="admin-grid" style="margin:12px 0;"><div class="field"><label for="product-search">Search catalogue</label><input id="product-search" type="search" placeholder="Search product name or category"></div><div class="field"><label for="product-status-filter">Filter by status</label><select id="product-status-filter"><option value="all">All statuses</option><option value="published">Published</option><option value="coming_soon">Coming soon</option><option value="draft">Draft</option></select></div></div><div id="products-admin-list"><p class="muted">Loading products...</p></div>
+          <div class="admin-grid" style="margin:12px 0;"><div class="field"><label for="product-search">Search catalogue</label><input id="product-search" type="search" placeholder="Search product name or category"></div><div class="field"><label for="product-status-filter">Filter by status</label><select id="product-status-filter"><option value="all">All statuses</option><option value="published">Published</option><option value="coming_soon">Coming soon</option><option value="draft">Draft</option></select></div></div><h4 class="studio-subhead">02 / PRODUCT LIBRARY</h4><div id="products-admin-list"><p class="muted">Loading products...</p></div>
         </div>
 
         <!-- Column 2: Customer Orders & Instant WhatsApp Delivery -->
@@ -431,7 +450,7 @@
             <h3>ORDERS & DELIVERY</h3>
             <span class="badge pending">WHATSAPP READY</span>
           </div>
-          <div id="orders-list"><p class="muted">Loading orders...</p></div>
+          <div class="order-alert-head"><strong>Live order queue</strong><span id="orders-pending-badge" class="badge pending">0 pending</span></div><p class="muted" style="margin-bottom:12px;">New orders appear here instantly while this admin page is open.</p><div id="orders-list"><p class="muted">Loading orders...</p></div>
         </div>
 
         <!-- Column 3: Finance, Multi-Promo Codes & Subscribers -->
@@ -481,10 +500,10 @@
 
   <!-- Mobile Bottom Navigation -->
   <nav class="mobile-bottom-nav">
-    <a href="#hud-section" class="active"><span>🏠</span>Overview</a>
-    <a href="#col-products"><span>📦</span>Products</a>
-    <a href="#col-orders"><span>🧾</span>Orders</a>
-    <a href="#col-finance"><span>💰</span>Finance</a>
+    <a href="admin.html"><span>🏠</span>Home</a>
+    <a href="admin-products.html"><span>📦</span>Products</a>
+    <a href="admin-orders.html"><span>🧾</span>Orders</a>
+    <a href="admin.html#col-finance"><span>💰</span>Finance</a>
   </nav>
 
   <script type="module">
@@ -520,6 +539,50 @@
     let productStatusFilter = "all";
     let latestOrdersForStats = [];
     let latestSubscribersForStats = {};
+    let ordersInitialized = false;
+    let knownOrderIds = new Set();
+
+
+    function playOrderAlert() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        [660, 880, 1100].forEach((frequency, index) => {
+          const oscillator = ctx.createOscillator(), gain = ctx.createGain();
+          oscillator.frequency.value = frequency; oscillator.type = "sine";
+          gain.gain.setValueAtTime(0.0001, ctx.currentTime + index * 0.13);
+          gain.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + index * 0.13 + 0.025);
+          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + index * 0.13 + 0.22);
+          oscillator.connect(gain); gain.connect(ctx.destination);
+          oscillator.start(ctx.currentTime + index * 0.13); oscillator.stop(ctx.currentTime + index * 0.13 + 0.24);
+        });
+        setTimeout(() => ctx.close(), 900);
+      } catch (_) {}
+    }
+    function announceNewOrder(order) {
+      const toast = document.getElementById("ops-toast");
+      if (toast) {
+        toast.innerHTML = '<strong>🛎️ NEW GHEPARDO ORDER</strong><span>' +
+          escapeHTML(order.customerName || "New customer") + ' · ' +
+          Number(order.totalEGP || 0).toLocaleString() + ' EGP</span><a href="admin-orders.html">Open order queue →</a>';
+        toast.classList.add("show");
+        clearTimeout(window.__ghepardoToastTimer);
+        window.__ghepardoToastTimer = setTimeout(() => toast.classList.remove("show"), 9000);
+      }
+      playOrderAlert();
+      if ("Notification" in window && Notification.permission === "granted") {
+        try { new Notification("New GHEPARDO order", { body: (order.customerName || "Customer") + " · " + Number(order.totalEGP || 0).toLocaleString() + " EGP", icon: "Logo.png", tag: "ghepardo-order-" + (order.id || Date.now()) }); } catch (_) {}
+      }
+    }
+    const enableAlertsButton = document.getElementById("enable-notifications");
+    if (enableAlertsButton) enableAlertsButton.addEventListener("click", async () => {
+      if (!("Notification" in window)) { alert("Browser notifications are not supported here. In-dashboard alerts will still work."); return; }
+      try {
+        const permission = await Notification.requestPermission();
+        enableAlertsButton.textContent = permission === "granted" ? "✓ Alerts enabled" : "🔔 Enable alerts";
+      } catch (_) { alert("Could not enable browser notifications."); }
+    });
 
     function setRing(id, pct) {
       const el = document.getElementById(id);
@@ -699,6 +762,14 @@
       stopOrders = onValue(ref(db, "orders"), snapshot => {
         const data = snapshot.val() || {};
         cachedOrders = data;
+        const currentIds = new Set(Object.keys(data));
+        if (ordersInitialized) {
+          for (const [newId, newOrder] of Object.entries(data)) {
+            if (!knownOrderIds.has(newId) && newOrder && newOrder.status !== "confirmed") announceNewOrder({...newOrder, id:newId});
+          }
+        }
+        knownOrderIds = currentIds;
+        ordersInitialized = true;
         const orders = Object.entries(data).map(([id, order]) => ({ id, ...order }))
           .sort((a, b) => (b.timestampMs || 0) - (a.timestampMs || 0));
         latestOrdersForStats = orders;
@@ -714,7 +785,10 @@
         const sevenDayRevenue = confirmedOrders.filter(o => Number(o.timestampMs || 0) >= sevenDaysAgo).reduce((sum,o)=>sum+Number(o.totalEGP||0),0);
         document.getElementById("stat-rev-today").textContent = todayRevenue.toLocaleString() + " EGP";
         document.getElementById("stat-rev-7d").textContent = sevenDayRevenue.toLocaleString() + " EGP";
-        document.getElementById("stat-pending-orders").textContent = orders.filter(o => o.status !== "confirmed").length;
+        const pendingCount = orders.filter(o => o.status !== "confirmed").length;
+        document.getElementById("stat-pending-orders").textContent = pendingCount;
+        const pendingBadge = document.getElementById("orders-pending-badge"); if (pendingBadge) pendingBadge.textContent = pendingCount + " pending";
+        const navCount = document.getElementById("nav-pending-count"); if (navCount) navCount.textContent = pendingCount;
         renderRevenueBars(orders);
 
         document.getElementById("stat-orders").textContent = orders.length;
