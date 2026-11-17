@@ -7,13 +7,16 @@
   button.setAttribute("aria-label", "Install " + appName);
   button.innerHTML = '<img src="/GHEPARDO/Logo.png" alt="" style="width:22px;height:22px;object-fit:contain"> <span>تثبيت ' + appName + '</span>';
   Object.assign(button.style, {
-    position:"fixed", right:"16px", bottom:"16px", zIndex:"9998",
+    position:"fixed", right:"14px", bottom:"88px", zIndex:"9998",
     display:"flex", alignItems:"center", gap:"9px", padding:"11px 15px",
     border:"1px solid #e5a93c", borderRadius:"999px", background:"#090707",
     color:"#f8cf7a", font:"700 13px system-ui,sans-serif",
     boxShadow:"0 5px 22px #0009", cursor:"pointer"
   });
-  document.addEventListener("DOMContentLoaded", () => {\n    const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;\n    if (!standalone) document.body.appendChild(button);\n  });
+  document.addEventListener("DOMContentLoaded", () => {
+    const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    if (!standalone) document.body.appendChild(button);
+  });
   window.addEventListener("beforeinstallprompt", event => {
     event.preventDefault();
     installPrompt = event;
