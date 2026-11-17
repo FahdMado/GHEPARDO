@@ -13,7 +13,7 @@
     color:"#f8cf7a", font:"700 13px system-ui,sans-serif",
     boxShadow:"0 5px 22px #0009", cursor:"pointer"
   });
-  document.addEventListener("DOMContentLoaded", () => document.body.appendChild(button));
+  document.addEventListener("DOMContentLoaded", () => {\n    const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;\n    if (!standalone) document.body.appendChild(button);\n  });
   window.addEventListener("beforeinstallprompt", event => {
     event.preventDefault();
     installPrompt = event;
