@@ -717,7 +717,7 @@
           msg.style.color = "#ff6b6b";
           msg.textContent = "✕ Invalid or inactive promo code.";
         } else {
-          appliedPromo = { code, discount: Number(promo.discount || 0) };
+          appliedPromo = { code, discount: Number(promo.discount || 0), marketerName: String(promo.marketerName || ""), commissionRate: Number(promo.commissionRate || 0) };
           msg.style.color = "#2ecc71";
           msg.textContent = `✓ Promo ${code} applied: ${appliedPromo.discount}% OFF!`;
         }
@@ -794,6 +794,9 @@
             customerName: name, contact, paymentReference: refNum,
             items: orderItems, subtotalEGP: subtotal,
             promoCode: appliedPromo ? appliedPromo.code : null,
+            promoMarketer: appliedPromo ? appliedPromo.marketerName : null,
+            promoCommissionRate: appliedPromo ? appliedPromo.commissionRate : 0,
+            promoCommissionAmount: appliedPromo ? Number((finalTotal * appliedPromo.commissionRate / 100).toFixed(2)) : 0,
             discountPercent: discountPct, totalEGP: finalTotal,
             status: "pending", downloadToken, timestampMs: createdAt
           },
