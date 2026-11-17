@@ -201,12 +201,29 @@
     /* Promo Code Card */
     .promo-card {
       background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 12px; padding: 11px 12px; margin-bottom: 9px;
-      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      border-radius: 14px; padding: 14px; margin-bottom: 10px;
+      display: grid; grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center; gap: 14px; width: 100%; min-width: 0;
+      box-shadow: 0 5px 16px rgba(0,0,0,.16);
     }
+    .promo-details { min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+    .promo-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-width: 0; }
     .promo-code-tag {
-      font-family: monospace; font-size: 0.92rem; font-weight: 800;
+      display: inline-block; max-width: 100%; overflow-wrap: anywhere;
+      font-family: monospace; font-size: 0.94rem; font-weight: 800;
       color: var(--gold-light); letter-spacing: 1px;
+    }
+    .promo-discount { color: var(--muted); font-size: .8rem; line-height: 1.4; }
+    .promo-discount strong { color: var(--gold-light); }
+    .promo-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+    .promo-actions button { min-height: 38px; min-width: 42px; padding: 8px 13px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
+    #promo-list { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+    #promo-list .promo-card { margin: 0; }
+    @media (max-width: 560px) {
+      .promo-card { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 13px; }
+      .promo-actions { display: grid; grid-template-columns: minmax(0,1fr) 44px; width: 100%; }
+      .promo-actions button:first-child { width: 100%; }
+      .promo-actions button:last-child { width: 44px; }
     }
 
     .prog-track { width: 100%; height: 6px; background: #080707; border-radius: 10px; overflow: hidden; margin-top: 6px; }
@@ -779,16 +796,16 @@
           const active = item.active !== false;
           return `
             <div class="promo-card">
-              <div>
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <div class="promo-details">
+                <div class="promo-heading">
                   <span class="promo-code-tag">${escapeHTML(code)}</span>
                   <span class="badge ${active ? 'confirmed' : 'paused'}">${active ? 'ACTIVE' : 'PAUSED'}</span>
                 </div>
-                <span class="muted">Discount: <strong style="color:var(--gold-light);">${Number(item.discount || 0)}% OFF</strong></span>
+                <span class="promo-discount">Discount: <strong>${Number(item.discount || 0)}% OFF</strong></span>
               </div>
-              <div style="display:flex; gap:6px;">
-                <button class="btn-outline" data-toggle-promo="${escapeHTML(code)}" data-promo-state="${active ? '1' : '0'}">${active ? 'Pause' : 'Activate'}</button>
-                <button class="btn-outline danger" data-delete-promo="${escapeHTML(code)}">✕</button>
+              <div class="promo-actions">
+                <button class="btn-outline" type="button" data-toggle-promo="${escapeHTML(code)}" data-promo-state="${active ? '1' : '0'}">${active ? 'Pause' : 'Activate'}</button>
+                <button class="btn-outline danger" type="button" aria-label="Delete ${escapeHTML(code)}" data-delete-promo="${escapeHTML(code)}">✕</button>
               </div>
             </div>
           `;
